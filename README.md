@@ -3,7 +3,7 @@
 
 - 🌱 We are always learning new things
 - 👯 We are looking to collaborate with other content creators
-- 🥅 2021 Goals: Complete 
+- 🥅 Goals: Code more, Create and Complete new projects
 - ⚡ Fun fact: There are over 700 different programming languages
 
 ### Spotify Playing 🎧
