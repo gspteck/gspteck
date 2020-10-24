@@ -11,10 +11,10 @@
 
 ### Connect with us:
 
-[<img align="left" alt="codeSTACKr.com" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
-[<img align="left" alt="codeSTACKr | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
-[<img align="left" alt="codeSTACKr | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]
-[<img align="left" alt="codeSTACKr | Instagram" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" />][instagram]
+[<img align="left" alt="gspteck.wixsite.com" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
+[<img align="left" alt="GSPTeck | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
+[<img align="left" alt="GSPTeck | Blog" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/dev.svg" />][Blog]
+[<img align="left" alt="GSPTeck | Email" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/email.svg" />][instagram]
 
 <br />
 
@@ -68,7 +68,7 @@
 <details>
   <summary>:zap: GitHub Stats</summary>
 
-  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.codestackr.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
+  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.gspteck.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
 
 </details>
 
