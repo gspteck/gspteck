@@ -55,24 +55,17 @@
 ---
 
 <details>
-  <summary>:zap: Recent GitHub Activity</summary>
-  
+  <summary>:zap: Recent GitHub Activity</summary>  
 <!--START_SECTION:activity-->
-
 <!--END_SECTION:activity-->
-
-  
-  <summary>:zap: GitHub Stats</summary>
-
-  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
-
 </details>
-
+<details>
+  <summary>:zap: GitHub Stats</summary>
+  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
+</details>
 <details>
   <summary>:zap: Top Languages</summary>
-
   <img align="right" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=gspteck&layout=compact" />
-
 </details>
 
 [website]: https://gspteck.wixsite.com/gspteck
