@@ -14,7 +14,7 @@
 [<img align="left" alt="gspteck.wixsite.com" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
 [<img align="left" alt="GSPTeck | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
 [<img align="left" alt="GSPTeck | Blog" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/dev.svg" />][Blog]
-[<img align="left" alt="GSPTeck | Email" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/envelop.svg" />][instagram]
+[<img align="left" alt="GSPTeck | Email" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/envelope.svg" />][email]
 
 <br />
 
