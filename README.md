@@ -63,8 +63,6 @@
 
 </details>
 
--
-
 <details>
   <summary>:zap: GitHub Stats</summary>
 
@@ -72,12 +70,10 @@
 
 </details>
 
---
-
 <details>
   <summary>:zap: Top Languages</summary>
 
-  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=gspteck&layout=compact" />
+  <img align="right" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=gspteck&layout=compact" />
 
 </details>
 
