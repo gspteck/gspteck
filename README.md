@@ -49,7 +49,7 @@
 ### 📕 Latest Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
-
+- [What was your first project?](https://dev.to/gspteck/what-was-your-first-project-3ef8)
 <!-- BLOG-POST-LIST:END -->
 
 ➡️ [more blog posts...](https://dev.to/gspteck)
