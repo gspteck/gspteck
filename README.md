@@ -70,6 +70,13 @@
 
 </details>
 
+<details>
+  <summary>:zap: GitHub Stats</summary>
+
+  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=gspteck" />
+
+</details>
+
 [website]: https://gspteck.wixsite.com/gspteck
 [youtube]: https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w
 [blog]: https://dev.to/gspteck
