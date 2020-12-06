@@ -7,7 +7,7 @@
 
 ### Connect with us:
 
-[<img align="left" alt="gspteck.wixsite.com" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
+[<img align="left" alt="gspteck.github.io" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
 [<img align="left" alt="GSPTeck | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
 [<img align="left" alt="GSPTeck | Blog" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@3.12.0/icons/wordpress.svg" />][Blog]
 [<img align="left" alt="GSPTeck | Email" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@3.12.0/icons/gmail.svg" />][email]
@@ -40,12 +40,22 @@
 
 ---
 
+### 📕 Latest Blog Posts
+
+<!-- BLOG-POST-LIST:START -->
+
+<!-- BLOG-POST-LIST:END -->
+
+➡️ [more blog posts...](https://dev.to/gspteck)
+
+---
+
 <details>
   <summary>:zap: GitHub Stats</summary>
   <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
 </details>
 
-[website]: https://gspteck.wixsite.com/gspteck
+[website]: https://gspteck.github.io
 [youtube]: https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w
 [blog]: https://dev.to/gspteck
 [email]: mailto:gspteck@gmail.com
