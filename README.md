@@ -1,7 +1,7 @@
 ### Hi there, we are [GSPTeck][website] 👋
 
-- 🌱 We are always learning new things
-- 👯 We are looking to collaborate with other content creators
+- 🌱 I am always learning new things
+- 👯 I am looking to collaborate with other content creators
 - 🥅 Goals: Code, Create and Complete new projects
 - ⚡ Fun fact: There are over 700 different programming languages
 
