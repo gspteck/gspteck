@@ -43,6 +43,7 @@
 ### 📕 Latest Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
+- [Earn cash as a DEV](https://dev.to/gspteck/earn-cash-as-a-dev-17k)
 - [Create a Stopwatch in JavaScript](https://dev.to/gspteck/create-a-stopwatch-in-javascript-2mak)
 <!-- BLOG-POST-LIST:END -->
 
