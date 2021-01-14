@@ -43,7 +43,6 @@
 ### 📕 Latest Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
-- [flutter help](https://dev.to/gspteck/flutter-help-1gp8)
 - [Earn cash as a DEV](https://dev.to/gspteck/earn-cash-as-a-dev-17k)
 - [Create a Stopwatch in JavaScript](https://dev.to/gspteck/create-a-stopwatch-in-javascript-2mak)
 <!-- BLOG-POST-LIST:END -->
