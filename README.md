@@ -33,7 +33,7 @@
 ### 📺 Latest YouTube Videos
 
 <!-- YOUTUBE:START -->
-
+- [SnakeGame by GSPTeck available on the Google Play Store!](https://www.youtube.com/watch?v=nHCN4mpCcvE)
 <!-- YOUTUBE:END -->
 
 ➡️ [more videos...](https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w)
