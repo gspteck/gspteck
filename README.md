@@ -62,6 +62,8 @@
 [blog]: https://dev.to/gspteck
 [email]: mailto:gspteck@gmail.com
 
+&nbsp;
+
 ## Other
 
 Support us by buying awsome merch on our [Teespring page](https://teespring.com/it/stores/gspteck-2).
