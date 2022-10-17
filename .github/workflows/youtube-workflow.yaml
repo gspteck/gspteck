@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  update-readme-with-youtube:
     runs-on: ubuntu-latest
     steps:
       - uses: DenverCoder1/github-readme-youtube-cards@main
