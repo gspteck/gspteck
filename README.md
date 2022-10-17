@@ -1,86 +1,58 @@
-### Hi there, I am [GSPTeck][website] 👋
+# 👾 GSPTeck
 
-- 🌱 I am always learning new things
-- 👯 I am looking to collaborate with other content creators
-- 🥅 Goals: Code, Create and Complete new projects
-- ⚡ Fun fact: There are over 700 different programming languages
+I'm an indie developer building new tools in a world where there are never enough. All projects are built from the ground up, from planning and designing to solving real-life problems with code. I strive to constantly learn and perfect my skills in coding.
 
-### Connect with me:
-
-[<img align="left" alt="gspteck.github.io" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
-[<img align="left" alt="GSPTeck | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
-[<img align="left" alt="GSPTeck | Blog" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@3.12.0/icons/wordpress.svg" />][Blog]
-[<img align="left" alt="GSPTeck | Email" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@3.12.0/icons/gmail.svg" />][email]
-
-<br />
-
-### Languages and Tools:
-
-<img align="left" alt="Visual Studio Code" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/visual-studio-code/visual-studio-code.png" />
-<img align="left" alt="HTML5" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png" />
-<img align="left" alt="CSS3" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/css/css.png" />
-<img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
-<img align="left" alt="Node.js" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png" />
-<img align="left" alt="Git" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/git/git.png" />
-<img align="left" alt="GitHub" width="26px" src="https://raw.githubusercontent.com/github/explore/78df643247d429f6cc873026c0622819ad797942/topics/github/github.png" />
-<img align="left" alt="Terminal" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/terminal/terminal.png" />
-
-<br />
-<br />
+   <p align="left">
+      <a href="https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w?sub_confirmation=1">
+         <img alt="youtube subscribers" title="Subscribe to my YouTube channel" src="https://custom-icon-badges.demolab.com/youtube/channel/subscribers/UCzSjPc3hvhGY6qYLVaWUk3w?color=%23E05D44&label=SUBSCRIBE&logo=video&logoColor=white&style=for-the-badge&labelColor=CE4630"/></a> 
+      <a href="https://www.youtube.com/c/fknight">
+         <img alt="youtube views" title="YouTube views" src="https://custom-icon-badges.demolab.com/youtube/channel/views/UCzSjPc3hvhGY6qYLVaWUk3w?color=%23E1AD0E&logo=eye&logoColor=white&style=for-the-badge&labelColor=C79600"/></a> 
+      <a href="https://github.com/ForrestKnight?tab=followers">
+         <img alt="followers" title="Follow me on Github" src="https://custom-icon-badges.demolab.com/github/followers/GSPTeck?color=236ad3&labelColor=1155ba&style=for-the-badge&logo=person-add&label=Follow&logoColor=white"/></a>
+      <a href="https://github.com/GSPTeck?tab=repositories&sort=stargazers">
+         <img alt="total stars" title="Total stars on GitHub" src="https://custom-icon-badges.demolab.com/github/stars/GSPTeck?color=55960c&style=for-the-badge&labelColor=488207&logo=star"/></a>
+   </p>
 
 ---
+
+### 🧰 Languages and Tools
+
+<img align="left" alt="Flutter" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg"/>
+<img align="left" alt="Python" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"/>
+<img align="left" alt="Unity" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/unity/unity-original.svg"/>
+<img align="left" alt="HTML" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg"/>
+<img align="left" alt="CSS" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg"/>
+<img align="left" alt="Javascript" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"/>
+<img align="left" alt="VSCode" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg"/>
+<img align="left" alt="Android Studio" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg"/>
+<img align="left" alt="Git" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"/>
+<img align="left" alt="Firebase" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg"/>
+<img align="left" alt="Node.js" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"/>
+<br />
+
+#
 
 ### 📺 Latest YouTube Videos
 
-<!-- YOUTUBE:START -->
-- [SnakeGame by GSPTeck available on the Google Play Store!](https://www.youtube.com/watch?v=nHCN4mpCcvE)
-<!-- YOUTUBE:END -->
+<!-- BEGIN YOUTUBE-CARDS -->
+<!-- END YOUTUBE-CARDS -->
 
-➡️ [more videos...](https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w)
-
----
+[<img src="https://custom-icon-badges.demolab.com/badge/-Subscribe%20For%20More-red?style=for-the-badge&logo=video&logoColor=white"/>](https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w?sub_confirmation=1)
 
 ### 📕 Latest Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
-- [Flutter posts](https://dev.to/gspteck/flutter-posts-4ic4)
-- [Earn cash as a DEV](https://dev.to/gspteck/earn-cash-as-a-dev-17k)
-- [Create a Stopwatch in JavaScript](https://dev.to/gspteck/create-a-stopwatch-in-javascript-2mak)
 <!-- BLOG-POST-LIST:END -->
 
-➡️ [more blog posts...](https://dev.to/gspteck)
+#
 
----
+### 📊 Stats
 
-<details>
-  <summary>:zap: GitHub Stats</summary>
-  <img align="left" alt="GSPTeck's GitHub Stats" src="https://github-readme-stats.vercel.app/api?username=gspteck&show_icons=true&hide_border=true" />
-</details>
+![Forrest's GitHub stats](https://github-readme-stats.vercel.app/api?username=gspteck&show_icons=true&theme=gruvbox)
+
+<!-- ![GitHub Streak](https://streak-stats.demolab.com?user=gspteck&theme=gruvbox&border_radius=4.5) -->
+
+#
 
 [website]: https://gspteck.github.io
 [youtube]: https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w
-[blog]: https://dev.to/gspteck
-[email]: mailto:gspteck@gmail.com
-
-## Other
-
-Support us by buying awsome merch on our [Teespring page](https://teespring.com/it/stores/gspteck-2).
-
-If you find any problems with code or have ANY suggestions for improvements and/or ideas for future projects,
-Please send us an email at 'gspteck@gmail.com'.
-We will review it and try our best to fix the code.
-
-Want to support us?
-
-BTC: 1Q1ZFsZCXhan1QG9Su1S9xEX75WpecYE3C
-
-ETH: 0x3F21aBAd969f9c8B18975B8cb9f039569bF10f0D
-
-BCH: bitcoincash:qrdv0y0lgasxs39kwmuvglsduztvmpcrhc24t68p8a
-
-PayPal: [gspteck@gmail.com](https://paypal.me/gspteck)
-
-or just credit us when you use our code (very much appreciated as well).
-
-Sincerely,
-GSPTeck
