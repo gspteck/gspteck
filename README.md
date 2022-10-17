@@ -1,4 +1,4 @@
-### Hi there, we are [GSPTeck][website] 👋
+### Hi there, I am [GSPTeck][website] 👋
 
 - 🌱 I am always learning new things
 - 👯 I am looking to collaborate with other content creators
