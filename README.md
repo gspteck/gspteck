@@ -5,7 +5,7 @@ I'm an indie developer building new tools in a world where there are never enoug
    <p align="left">
       <a href="https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w?sub_confirmation=1">
          <img alt="youtube subscribers" title="Subscribe to my YouTube channel" src="https://custom-icon-badges.demolab.com/youtube/channel/subscribers/UCzSjPc3hvhGY6qYLVaWUk3w?color=%23E05D44&label=SUBSCRIBE&logo=video&logoColor=white&style=for-the-badge&labelColor=CE4630"/></a> 
-      <a href="https://www.youtube.com/c/fknight">
+      <a href="https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w">
          <img alt="youtube views" title="YouTube views" src="https://custom-icon-badges.demolab.com/youtube/channel/views/UCzSjPc3hvhGY6qYLVaWUk3w?color=%23E1AD0E&logo=eye&logoColor=white&style=for-the-badge&labelColor=C79600"/></a> 
       <a href="https://github.com/GSPTeck?tab=followers">
          <img alt="followers" title="Follow me on Github" src="https://custom-icon-badges.demolab.com/github/followers/GSPTeck?color=236ad3&labelColor=1155ba&style=for-the-badge&logo=person-add&label=Follow&logoColor=white"/></a>
