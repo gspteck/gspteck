@@ -43,6 +43,7 @@ I'm an indie developer building new tools in a world where there are never enoug
 ### 📕 Latest Blog Posts
 
 <!-- BLOG-POST-LIST:START -->
+- [Metered Billing](https://dev.to/gspteck/metered-billing-1i3g)
 - [Flutter posts](https://dev.to/gspteck/flutter-posts-4ic4)
 - [8 Ways to Earn Cash as a Developer](https://dev.to/gspteck/earn-cash-as-a-dev-17k)
 - [Create a Stopwatch in JavaScript](https://dev.to/gspteck/create-a-stopwatch-in-javascript-2mak)
