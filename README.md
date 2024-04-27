@@ -35,7 +35,7 @@ I'm an indie developer building new tools in a world where there are never enoug
 ### 📺 Latest YouTube Videos
 
 <!-- BEGIN YOUTUBE-CARDS -->
-[![SnakeGame by GSPTeck available on the Google Play Store!](https://ytcards.demolab.com/?id=nHCN4mpCcvE&title=SnakeGame+by+GSPTeck+available+on+the+Google+Play+Store%21&lang=en&timestamp=1627927268&background_color=%230d1117&title_color=%23ffffff&stats_color=%23dedede&max_title_lines=1&width=250&border_radius=5&duration=45 "SnakeGame by GSPTeck available on the Google Play Store!")](https://www.youtube.com/watch?v=nHCN4mpCcvE)
+
 <!-- END YOUTUBE-CARDS -->
 
 [<img src="https://custom-icon-badges.demolab.com/badge/-Subscribe%20For%20More-red?style=for-the-badge&logo=video&logoColor=white"/>](https://youtube.com/channel/UCzSjPc3hvhGY6qYLVaWUk3w?sub_confirmation=1)
