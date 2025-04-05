@@ -1,0 +1,112 @@
+/*  General  */
+:root {
+  --textColor: #1B1212;
+	--backgroundColor: #F7FFF7;
+}
+
+body {
+	font-family: "IBM Plex Mono", monospace;
+  font-weight: 400;
+  font-style: normal; 
+	color: var(--textColor);
+	background-color: var(--backgroundColor);
+}
+
+.section-title {
+	margin-top: 50px;
+	margin-left: 20px;
+}
+
+/*  Data  */
+#top-container-wrapper {
+	margin-top: 75px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 3vw;
+}
+#data-container {
+	text-align: right;
+}
+#quote-container {
+	text-align: left;
+}
+#data-container, #quote-container {	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+#data-container h1 {
+	margin: 0;
+	padding: 0;
+	font-size: 50px;
+	line-height: 45px;
+}
+#data-container h4 {
+	margin: 0;
+	line-height: 15px;
+}
+#data-container ul {
+	margin: 10px 0 0 0;
+	padding: 0;
+	list-style: none;	
+}
+#data-container ul li {
+	display: inline;
+	margin-left: 10px;
+}
+#data-container ul li i {
+	font-size: 30px;
+	cursor: pointer;
+}
+
+/*  Work Experience  */
+.exp-wrapper {
+	margin: 10px;
+	padding: 10px;
+	border: 3px solid var(--textColor);
+	border-radius: 15px;	
+}
+.exp-header {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+.exp-logo-container {
+	margin: 0;
+	padding: 0;
+}
+.exp-logo-container img {
+	width: 50px;
+	height: 50px;
+	border-radius: 13px;
+}
+.exp-name-container {
+	margin: 0;
+	padding: 0;	
+}
+.exp-description {
+	margin: 0;
+	padding: 0;
+}
+
+/*  Projects  */
+.proj-wrapper {
+	background-color: yellow;
+}
+.proj-img {
+	width: 200px;
+	height: 100px;
+	background-color: lightcyan;
+}
+.proj-title {
+	background-color: blue;
+}
+.proj-stack {
+	background-color: green;
+}
+.proj-description {
+	background-color: grey;
+}

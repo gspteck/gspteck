@@ -1,0 +1,24 @@
+{
+  "name": "gspteck",
+  "version": "1.0.0",
+  "description": "I'm an indie developer building new tools in a world where there are never enough. All projects are built from the ground up, from planning and designing to solving real-life problems with code. I strive to constantly learn and perfect my skills in coding.",
+  "homepage": "https://github.com/gspteck/gspteck",
+  "bugs": {
+    "url": "https://github.com/gspteck/gspteck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gspteck/gspteck.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+		"start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
