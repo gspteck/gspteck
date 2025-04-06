@@ -67,12 +67,12 @@ body {
 	margin: 10px;
 	padding: 10px;
 	border: 3px solid var(--textColor);
-	border-radius: 15px;	
+border-radius: 15px;	
 }
 .exp-header {
 	display: flex;
 	align-items: center;
-	gap: 20px;
+	gap: 10px;
 }
 .exp-logo-container {
 	margin: 0;
@@ -93,20 +93,100 @@ body {
 }
 
 /*  Projects  */
+.projs-container {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	display: flex;
+	justify-content: center;
+	gap: 1vw;
+	flex-wrap: wrap;	
+}
 .proj-wrapper {
-	background-color: yellow;
+	width: 45vw;
+	margin-left: 10px;
+	margin-right: 10px;
+	position: relative;	
 }
 .proj-img {
-	width: 200px;
-	height: 100px;
-	background-color: lightcyan;
+	width: 45vw;
+	border-radius: 10px;
+}
+.proj-icon {
+	padding: 7px;
+	position: absolute;
+	font-size: 20px;
+	color: var(--backgroundColor);
+	border-radius: 25px;
+	background-color: var(--textColor);
+	cursor: pointer;
+}
+.proj-icon.fa-github-alt {
+  top: 10px;
+  right: 50px;
+}
+.proj-icon.fa-link {
+  top: 10px;
+  right: 10px;
 }
 .proj-title {
-	background-color: blue;
-}
-.proj-stack {
-	background-color: green;
+	margin: 0 0 0 10px;
 }
 .proj-description {
-	background-color: grey;
+	margin: 0 0 20px 10px;	
+}
+.proj-stack {
+	margin: 3px 0 3px 10px;
+	padding: 5px 10px 5px 10px;
+	display: inline-block;
+	border-radius: 10px;
+	color: var(--backgroundColor);
+	background-color: var(--textColor);
+}
+
+/*  Footer  */
+#creds {
+	margin-top: 50px;
+	text-align: center;
+}
+
+/*  Mobile CSS  */
+@media screen and (max-width: 480px) {
+    #data-container h1 {
+        font-size: 28px;
+        line-height: 26px;
+    }
+    #data-container h4 {
+        font-size: 14px;
+    }
+    #data-container ul li i {
+        font-size: 20px;
+        margin: 0;
+    }
+    #quote-container h1 {
+        font-size: 16px;
+    }
+    
+    .exp-logo-container img {
+        width: 30px;
+        height: 30px;
+    }
+    .exp-name-container h3 {
+        font-size: 18px;
+    }
+    .exp-description {
+        font-size: 12px;
+    }
+
+		.proj-wrapper {
+			width: 90vw;
+		}
+		.proj-img {
+			width: 90vw;
+		}
+    .proj-title {
+        font-size: 18px;
+    }
+    .proj-stack {
+        font-size: 12px;
+    }
 }
