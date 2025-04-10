@@ -150,7 +150,7 @@ border-radius: 15px;
 }
 
 /*  Mobile CSS  */
-@media screen and (max-width: 480px) {
+@media only screen and (max-width: 480px) {
     #data-container h1 {
         font-size: 28px;
         line-height: 26px;
