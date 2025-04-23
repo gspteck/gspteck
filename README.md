@@ -35,6 +35,8 @@ I'm an indie developer building new tools in a world where there are never enoug
 ### 📺 Latest YouTube Videos
 
 <!-- BEGIN YOUTUBE-CARDS -->
+[![Download CoinDrop Now!](https://ytcards.demolab.com/?id=AP7IexpOoNY&title=Download+CoinDrop+Now%21&lang=en&timestamp=1745389026&background_color=%230d1117&title_color=%23ffffff&stats_color=%23dedede&max_title_lines=1&width=250&border_radius=5&duration=16 "Download CoinDrop Now!")](https://www.youtube.com/watch?v=AP7IexpOoNY)
+[![CoinDrop: The Token Airdrop App of Your Dreams!](https://ytcards.demolab.com/?id=DcS_y78Btig&title=CoinDrop%3A+The+Token+Airdrop+App+of+Your+Dreams%21&lang=en&timestamp=1745388616&background_color=%230d1117&title_color=%23ffffff&stats_color=%23dedede&max_title_lines=1&width=250&border_radius=5&duration=16 "CoinDrop: The Token Airdrop App of Your Dreams!")](https://www.youtube.com/watch?v=DcS_y78Btig)
 [![SnakeGame by GSPTeck available on the Google Play Store!](https://ytcards.demolab.com/?id=nHCN4mpCcvE&title=SnakeGame+by+GSPTeck+available+on+the+Google+Play+Store%21&lang=en&timestamp=1627927268&background_color=%230d1117&title_color=%23ffffff&stats_color=%23dedede&max_title_lines=1&width=250&border_radius=5&duration=45 "SnakeGame by GSPTeck available on the Google Play Store!")](https://www.youtube.com/watch?v=nHCN4mpCcvE)
 <!-- END YOUTUBE-CARDS -->
 
