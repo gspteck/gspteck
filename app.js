@@ -7,6 +7,11 @@ const port = process.env.PORT || 8080;
 app.get('/', (req, res) => {
 	app.use(express.static('public'));
   res.sendFile(path.join(__dirname, "/public/index.html"));	
+});
+
+app.get('/policy', (req, res) => {
+	app.use(express.static('public'));
+  res.sendFile(path.join(__dirname, "/public/views/policy.html"));	
 })
 
 app.listen(port, () => {
