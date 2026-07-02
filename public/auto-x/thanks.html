@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment successful — Auto X Scheduler</title>
+    <link rel="icon" href="/auto-x/logo.png" type="image/png" />
+    <!-- X conversion tracking base code -->
+    <script>
+      !(function (e, t, n, s, u, a) {
+        e.twq ||
+          ((s = e.twq =
+            function () {
+              s.exe ? s.exe.apply(s, arguments) : s.queue.push(arguments);
+            }),
+          (s.version = "1.1"),
+          (s.queue = []),
+          (u = t.createElement(n)),
+          (u.async = !0),
+          (u.src = "https://static.ads-twitter.com/uwt.js"),
+          (a = t.getElementsByTagName(n)[0]),
+          a.parentNode.insertBefore(u, a));
+      })(window, document, "script");
+      twq("config", "on1mu");
+    </script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #060608;
+        --text: #f8f8fa;
+        --muted: #9494a8;
+        --tg: #2aabee;
+        --font: "IBM Plex Sans", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text);
+        text-align: center;
+      }
+      .card {
+        max-width: 420px;
+        padding: 32px 28px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(18, 18, 24, 0.85);
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 1.35rem;
+      }
+      p {
+        margin: 0 0 20px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      a {
+        color: var(--tg);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .spinner {
+        width: 28px;
+        height: 28px;
+        margin: 0 auto;
+        border: 3px solid rgba(42, 171, 238, 0.2);
+        border-top-color: var(--tg);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Payment successful</h1>
+      <p id="status">Confirming your subscription…</p>
+      <div class="spinner" aria-hidden="true"></div>
+      <p style="margin-top: 20px; font-size: 0.9rem">
+        <a id="bot-link" href="#">Open Telegram bot</a>
+      </p>
+    </div>
+    <script>
+      (function () {
+        var PIXEL_ID = "on1mu";
+        var TIER_EVENTS = {
+          pro: "tw-on1mu-rdblb",
+          ultra_text: "tw-on1mu-rdblg",
+          ultra_image: "tw-on1mu-rdblh",
+          ultra_video: "tw-on1mu-rdbli",
+        };
+        var TIER_LABELS = {
+          pro: "Pro",
+          ultra_text: "Ultra Text",
+          ultra_image: "Ultra Image",
+          ultra_video: "Ultra Video",
+        };
+
+        var params = new URLSearchParams(window.location.search);
+        var tier = params.get("tier") || "";
+        var bot = (params.get("bot") || "auto_x_schedule_bot").replace(
+          /^@/,
+          "",
+        );
+        var sessionId = params.get("session_id") || "";
+        var valueRaw = params.get("value");
+        var currency = (params.get("currency") || "USD").toUpperCase();
+        var eventId = TIER_EVENTS[tier];
+        var botUrl =
+          "https://t.me/" + encodeURIComponent(bot) + "?start=payment_success";
+
+        var statusEl = document.getElementById("status");
+        var botLink = document.getElementById("bot-link");
+        botLink.href = botUrl;
+
+        if (!eventId || !sessionId) {
+          statusEl.textContent =
+            "Subscription received. Opening the Telegram bot…";
+          window.setTimeout(function () {
+            window.location.replace(botUrl);
+          }, 800);
+          return;
+        }
+
+        var dedupeKey = "auto-x-subscribe-" + sessionId;
+        if (!sessionStorage.getItem(dedupeKey) && typeof twq === "function") {
+          var payload = {
+            conversion_id: sessionId,
+            currency: currency,
+            status: "completed",
+            contents: [
+              {
+                content_id: tier,
+                content_name: TIER_LABELS[tier] || tier,
+                num_items: 1,
+              },
+            ],
+          };
+          var value = parseFloat(valueRaw);
+          if (!isNaN(value) && value > 0) {
+            payload.value = value;
+            payload.contents[0].content_price = value;
+          }
+          twq("event", eventId, payload);
+          sessionStorage.setItem(dedupeKey, "1");
+        }
+
+        statusEl.textContent =
+          (TIER_LABELS[tier] || "Your plan") +
+          " is active. Opening the Telegram bot…";
+
+        window.setTimeout(function () {
+          window.location.replace(botUrl);
+        }, 1500);
+      })();
+    </script>
+  </body>
+</html>
