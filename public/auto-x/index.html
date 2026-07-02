@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Auto X Scheduler — schedule and publish posts on X (Twitter) directly from Telegram."
+    />
+    <title>Auto X Scheduler — Telegram Bot</title>
+    <link rel="icon" href="/auto-x/logo.png" type="image/png" />
+    <!-- X conversion tracking base code -->
+    <script>
+      !(function (e, t, n, s, u, a) {
+        e.twq ||
+          ((s = e.twq =
+            function () {
+              s.exe ? s.exe.apply(s, arguments) : s.queue.push(arguments);
+            }),
+          (s.version = "1.1"),
+          (s.queue = []),
+          (u = t.createElement(n)),
+          (u.async = !0),
+          (u.src = "https://static.ads-twitter.com/uwt.js"),
+          (a = t.getElementsByTagName(n)[0]),
+          a.parentNode.insertBefore(u, a));
+      })(window, document, "script");
+      twq("config", "on1mu");
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+:root {
+  color-scheme: dark;
+  --bg: #060608;
+  --bg-elevated: #0e0e12;
+  --bg-card: rgba(18, 18, 24, 0.72);
+  --text: #f8f8fa;
+  --muted: #9494a8;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --tg: #2aabee;
+  --tg-dim: rgba(42, 171, 238, 0.18);
+  --x-white: #e7e9ea;
+  --violet: #8b7cf8;
+  --amber: #f5b942;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --max-width: 1140px;
+  --nav-height: 72px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--tg);
+  text-decoration: none;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+}
+
+/* Ambient background */
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-glow__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.bg-glow__orb--tg {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  left: -80px;
+  background: radial-gradient(circle, #2aabee 0%, transparent 70%);
+}
+
+.bg-glow__orb--x {
+  width: 400px;
+  height: 400px;
+  top: 30%;
+  right: -100px;
+  background: radial-gradient(circle, #3d3d4a 0%, transparent 70%);
+  animation-delay: -6s;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(30px, 20px) scale(1.08); }
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nav */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 16px 28px;
+  width: 100%;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(6, 6, 8, 0.72);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.nav::after {
+  content: "";
+  position: absolute;
+  inset: auto 28px 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border) 20%,
+    var(--border) 80%,
+    transparent
+  );
+}
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav__brand:hover {
+  color: var(--text);
+}
+
+.nav__logo {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+}
+
+.nav__logo svg {
+  width: 100%;
+  height: 100%;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav__link {
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav__link:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  text-decoration: none;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn__icon {
+  width: 18px;
+  height: 18px;
+}
+
+.btn--sm {
+  padding: 9px 16px;
+  font-size: 0.85rem;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #35b5f0, #1d8fd6);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(42, 171, 238, 0.35);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 8px 32px rgba(42, 171, 238, 0.45);
+  color: #fff;
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.btn--large {
+  padding: 16px 32px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+/* Main */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 28px 80px;
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 56px 0 100px;
+  min-height: calc(100vh - var(--nav-height));
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+}
+
+.pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.hero__title {
+  margin: 0 0 20px;
+  font-size: clamp(2.4rem, 5.5vw, 3.75rem);
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #fff 30%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text--tg {
+  background: linear-gradient(135deg, #5cc8ff, #2aabee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero__lead {
+  margin: 0 0 32px;
+  font-size: 1.125rem;
+  color: var(--muted);
+  max-width: 48ch;
+  line-height: 1.7;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.hero__stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.hero__stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero__stats strong {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.hero__stats span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Phone mockup */
+.hero__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.phone {
+  width: min(100%, 320px);
+  background: linear-gradient(180deg, #14141a 0%, #0c0c10 100%);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.phone__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.phone__avatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2aabee, #1d7fb8);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.phone__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.phone__status {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--tg);
+}
+
+.phone__chat {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 280px;
+}
+
+.bubble {
+  max-width: 88%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.bubble--bot {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+
+.bubble--user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #2aabee, #1d8fd6);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble--media {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bubble__media-icon {
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.bubble--success {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: #a7f3d0;
+}
+
+.bubble__check {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.phone__input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 14px 14px;
+  padding: 10px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.phone__send {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tg);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.float-card {
+  position: absolute;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  animation: float 5s ease-in-out infinite;
+}
+
+.float-card__label {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.float-card strong {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.float-card--schedule {
+  top: 8%;
+  right: 0;
+  animation-delay: -2s;
+}
+
+.float-card--queue {
+  bottom: 12%;
+  left: -8px;
+  animation-delay: -4s;
+}
+
+/* Sections */
+.section-head {
+  margin-bottom: 36px;
+}
+
+.section-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tg);
+}
+
+.section-title {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.features {
+  margin-bottom: 100px;
+}
+
+.features__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.feature-card {
+  padding: 26px 22px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.feature-card__icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.feature-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.feature-card__icon--blue {
+  background: var(--tg-dim);
+  color: var(--tg);
+}
+
+.feature-card__icon--white {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--x-white);
+}
+
+.feature-card__icon--violet {
+  background: rgba(139, 124, 248, 0.15);
+  color: var(--violet);
+}
+
+.feature-card__icon--amber {
+  background: rgba(245, 185, 66, 0.12);
+  color: var(--amber);
+}
+
+.feature-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* Steps */
+.steps {
+  margin-bottom: 100px;
+}
+
+.steps__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.steps__track::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-hover) 15%,
+    var(--border-hover) 85%,
+    transparent
+  );
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 12px;
+  position: relative;
+}
+
+.step__num {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tg);
+  background: var(--bg);
+  border: 1px solid rgba(42, 171, 238, 0.35);
+  box-shadow: 0 0 24px rgba(42, 171, 238, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.step__body h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.step__body p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Plans */
+.plans {
+  margin-bottom: 100px;
+}
+
+.plans__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.plan-card {
+  position: relative;
+  padding: 28px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-hover);
+}
+
+.plan-card--featured {
+  border-color: rgba(42, 171, 238, 0.4);
+  background: linear-gradient(
+    165deg,
+    rgba(42, 171, 238, 0.12) 0%,
+    var(--bg-card) 45%
+  );
+  box-shadow: 0 20px 60px rgba(42, 171, 238, 0.12);
+}
+
+.plan-card__badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tg);
+  background: var(--tg-dim);
+  border: 1px solid rgba(42, 171, 238, 0.3);
+}
+
+.plan-card__head {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.plan-card__price {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.plan-card__price span {
+  font-size: 1.2rem;
+  color: var(--muted);
+  vertical-align: super;
+}
+
+.plan-card__price--paid {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.plan-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan-card__list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.plan-card__list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--tg);
+  font-size: 0.8rem;
+}
+
+.plan-card__list li + li {
+  margin-top: 10px;
+}
+
+.plans__note {
+  margin: 24px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* CTA */
+.cta {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 64px 32px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.cta__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 80% at 50% 100%,
+    rgba(42, 171, 238, 0.2),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.cta h2 {
+  position: relative;
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cta p {
+  position: relative;
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.cta .btn {
+  position: relative;
+}
+
+/* Footer */
+.footer {
+  padding: 36px 28px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.footer__sep {
+  margin: 0 6px;
+  opacity: 0.4;
+}
+
+/* Reveal animation */
+.reveal {
+  animation: reveal 0.7s ease both;
+}
+
+.reveal--delay {
+  animation-delay: 0.15s;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    min-height: auto;
+    padding-top: 32px;
+  }
+
+  .hero__visual {
+    order: -1;
+    padding: 0;
+  }
+
+  .float-card--schedule {
+    right: 4%;
+  }
+
+  .float-card--queue {
+    left: 4%;
+  }
+
+  .features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .steps__track {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 16px;
+  }
+
+  .steps__track::before {
+    display: none;
+  }
+
+  .plans__grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav__links .nav__link {
+    display: none;
+  }
+
+  .nav {
+    padding: 14px 20px;
+  }
+
+  main {
+    padding: 0 20px 64px;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .features__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .steps__track {
+    grid-template-columns: 1fr;
+  }
+
+  .step {
+    flex-direction: row;
+    text-align: left;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .step__num {
+    margin-bottom: 0;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true">
+      <div class="bg-glow__orb bg-glow__orb--tg"></div>
+      <div class="bg-glow__orb bg-glow__orb--x"></div>
+    </div>
+
+    <div class="page">
+      <header class="nav">
+        <a class="nav__brand" href="/auto-x/">
+          <span class="nav__logo" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="9" fill="url(#logo-grad)" />
+              <path
+                d="M10 16.5l4 2.5 8-6.5"
+                stroke="#fff"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <defs>
+                <linearGradient id="logo-grad" x1="4" y1="4" x2="28" y2="28">
+                  <stop stop-color="#2AABEE" />
+                  <stop offset="1" stop-color="#1D8FD6" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+          Auto X
+        </a>
+        <nav class="nav__links">
+          <a class="nav__link" href="#features">Features</a>
+          <a class="nav__link" href="#how-it-works">How it works</a>
+          <a class="nav__link" href="#plans">Plans</a>
+          <a
+            class="btn btn--sm btn--primary"
+            href="https://t.me/auto_x_schedule_bot"
+            rel="noopener noreferrer"
+          >
+            Open bot
+          </a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero__content reveal">
+            <div class="pill">
+              <span class="pill__dot"></span>
+              Telegram bot · Live now
+            </div>
+            <h1 class="hero__title">
+              Schedule on <span class="gradient-text">X</span> from
+              <span class="gradient-text gradient-text--tg">Telegram</span>
+            </h1>
+            <p class="hero__lead">
+              Queue text and media posts, connect your X account once, and let
+              Auto X publish on time — with loops and AI on paid plans.
+            </p>
+            <div class="hero__actions">
+              <a
+                class="btn btn--primary"
+                href="https://t.me/auto_x_schedule_bot"
+                rel="noopener noreferrer"
+              >
+                <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"
+                  />
+                </svg>
+                Open in Telegram
+              </a>
+              <a class="btn btn--ghost" href="#how-it-works">See how it works</a>
+            </div>
+            <ul class="hero__stats">
+              <li>
+                <strong>Free</strong>
+                <span>to get started</span>
+              </li>
+              <li>
+                <strong>OAuth</strong>
+                <span>secure X link</span>
+              </li>
+              <li>
+                <strong>Auto</strong>
+                <span>timed publishing</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="hero__visual reveal reveal--delay" aria-hidden="true">
+            <div class="phone">
+              <div class="phone__bar">
+                <span class="phone__avatar">AX</span>
+                <div>
+                  <p class="phone__name">Auto X Scheduler</p>
+                  <p class="phone__status">bot</p>
+                </div>
+              </div>
+              <div class="phone__chat">
+                <div class="bubble bubble--bot">
+                  Welcome! Use /connect to link your X account.
+                </div>
+                <div class="bubble bubble--user">/schedule</div>
+                <div class="bubble bubble--bot">
+                  Send the post you want to schedule.
+                </div>
+                <div class="bubble bubble--user bubble--media">
+                  <span class="bubble__media-icon">𝕏</span>
+                  <span>Launch day thread — goes live Friday 9:00 AM</span>
+                </div>
+                <div class="bubble bubble--bot bubble--success">
+                  <span class="bubble__check">✓</span>
+                  Scheduled for Fri, 9:00 AM · Post #42
+                </div>
+              </div>
+              <div class="phone__input">
+                <span>Message</span>
+                <span class="phone__send">↑</span>
+              </div>
+            </div>
+            <div class="float-card float-card--schedule">
+              <span class="float-card__label">Next up</span>
+              <strong>Fri · 9:00 AM</strong>
+            </div>
+            <div class="float-card float-card--queue">
+              <span class="float-card__label">In queue</span>
+              <strong>3 posts</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="features" id="features" aria-labelledby="features-title">
+          <div class="section-head reveal">
+            <p class="section-eyebrow">Features</p>
+            <h2 id="features-title" class="section-title">
+              Everything you need to stay on schedule
+            </h2>
+          </div>
+          <ul class="features__grid">
+            <li class="feature-card reveal">
+              <div class="feature-card__icon feature-card__icon--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="4" width="18" height="18" rx="3" />
+                  <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+              </div>
+              <h3>Schedule posts</h3>
+              <p>
+                Pick a date and time for text or media. View and cancel anytime
+                with /queue.
+              </p>
+            </li>
+            <li class="feature-card reveal">
+              <div class="feature-card__icon feature-card__icon--white">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </div>
+              <h3>Secure X connection</h3>
+              <p>
+                One-time OAuth link. Tokens are encrypted and refreshed
+                automatically.
+              </p>
+            </li>
+            <li class="feature-card reveal">
+              <div class="feature-card__icon feature-card__icon--violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M17 1l4 4-4 4" />
+                  <path d="M3 11V9a4 4 0 014-4h14" />
+                  <path d="M7 23l-4-4 4-4" />
+                  <path d="M21 13v2a4 4 0 01-4 4H3" />
+                </svg>
+              </div>
+              <h3>Post loops</h3>
+              <p>
+                Pro+: recurring loops on daily, weekly, or custom intervals.
+              </p>
+            </li>
+            <li class="feature-card reveal">
+              <div class="feature-card__icon feature-card__icon--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z" />
+                  <path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1z" />
+                </svg>
+              </div>
+              <h3>AI generation</h3>
+              <p>
+                Ultra: generate text, image, or video with Grok before you
+                schedule.
+              </p>
+            </li>
+          </ul>
+        </section>
+
+        <section class="steps" id="how-it-works" aria-labelledby="steps-title">
+          <div class="section-head reveal">
+            <p class="section-eyebrow">How it works</p>
+            <h2 id="steps-title" class="section-title">Up and running in minutes</h2>
+          </div>
+          <ol class="steps__track reveal">
+            <li class="step">
+              <span class="step__num">01</span>
+              <div class="step__body">
+                <h3>Start the bot</h3>
+                <p>Open @auto_x_schedule_bot and run /start.</p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step__num">02</span>
+              <div class="step__body">
+                <h3>Connect X</h3>
+                <p>Authorize with /connect — one tap, done.</p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step__num">03</span>
+              <div class="step__body">
+                <h3>Schedule</h3>
+                <p>/schedule → send content → pick your time.</p>
+              </div>
+            </li>
+            <li class="step">
+              <span class="step__num">04</span>
+              <div class="step__body">
+                <h3>Auto-publish</h3>
+                <p>We post on time and notify you when it's live.</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="plans" id="plans" aria-labelledby="plans-title">
+          <div class="section-head reveal">
+            <p class="section-eyebrow">Pricing</p>
+            <h2 id="plans-title" class="section-title">Pick the plan that fits</h2>
+          </div>
+          <ul class="plans__grid reveal">
+            <li class="plan-card">
+              <div class="plan-card__head">
+                <h3>Free</h3>
+                <p class="plan-card__price"><span>$</span>0</p>
+              </div>
+              <ul class="plan-card__list">
+                <li>Text &amp; media scheduling</li>
+                <li>7-day horizon</li>
+                <li>10 media posts / month</li>
+              </ul>
+            </li>
+            <li class="plan-card plan-card--featured">
+              <span class="plan-card__badge">Popular</span>
+              <div class="plan-card__head">
+                <h3>Pro</h3>
+                <p class="plan-card__price plan-card__price--paid">Subscription</p>
+              </div>
+              <ul class="plan-card__list">
+                <li>Everything in Free</li>
+                <li>Post loops</li>
+                <li>Extended limits</li>
+                <li>Ad-free</li>
+              </ul>
+            </li>
+            <li class="plan-card">
+              <div class="plan-card__head">
+                <h3>Ultra</h3>
+                <p class="plan-card__price plan-card__price--paid">Subscription</p>
+              </div>
+              <ul class="plan-card__list">
+                <li>Everything in Pro</li>
+                <li>AI text, image &amp; video</li>
+                <li>Highest limits</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="plans__note reveal">
+            Upgrade anytime with <code>/subscribe</code> inside the bot.
+          </p>
+        </section>
+
+        <section class="cta reveal">
+          <div class="cta__glow" aria-hidden="true"></div>
+          <h2>Your next post, on autopilot</h2>
+          <p>Start scheduling in Telegram — no app install required.</p>
+          <a
+            class="btn btn--primary btn--large"
+            href="https://t.me/auto_x_schedule_bot"
+            rel="noopener noreferrer"
+          >
+            @auto_x_schedule_bot
+          </a>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>
+          Built by <a href="https://gspteck.com">GSPTeck</a>
+          <span class="footer__sep">·</span>
+          <a href="https://gspteck.com/policy">Privacy</a>
+        </p>
+      </footer>
+    </div>
+    <script>
+      (function () {
+        var EVENT_ID = "tw-on1mu-rdbl8";
+        var BOT_LINK = "t.me/auto_x_schedule_bot";
+
+        document.querySelectorAll('a[href*="' + BOT_LINK + '"]').forEach(
+          function (link) {
+            link.addEventListener("click", function () {
+              if (typeof twq === "function") {
+                twq("event", EVENT_ID);
+              }
+            });
+          },
+        );
+      })();
+    </script>
+  </body>
+</html>
