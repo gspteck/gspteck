@@ -223,18 +223,11 @@ Third-party services operate under their own privacy policies and practices, and
 
 Participation in the Bright Data network via the Bright SDK is entirely optional and is not required to use the Services or access their core functionality. Access to premium features does not depend on participation in the Bright Data network.
 
-You will only be enrolled in the Bright Data network if you provide **explicit, affirmative consent**. By opting in, you authorize GSPTeck and Bright Data to use your device and network connection as part of a peer-assisted network, as described in the [Bright SDK End User License Agreement (EULA)](https://bright-sdk.com/eula?utm_source=gspteck.com) and the [Bright Data Privacy Policy](https://bright-sdk.com/privacy-policy?utm_source=gspteck.com).
+In return for premium features of CoinDrop, you may choose to be a peer on the Bright Data network. By doing so, you agree to have read and accepted the [Bright SDK End User License Agreement (EULA)](https://bright-sdk.com/eula?utm_source=gspteck.com) and [Bright Data Privacy Policy](https://bright-sdk.com/privacy-policy?utm_source=gspteck.com).
 
-Before consenting, you are encouraged to review:
-
-- Bright SDK End User License Agreement (EULA)
-- Bright Data Privacy Policy
-
-You may withdraw your consent and opt out of the Bright Data network at any time without affecting your access to the Services. Opt-out can be completed by:
+Opt-out can be completed by:
 
 - Disabling the “Bright Data Network” setting in **Tasks > Web indexing**
-
-Upon opt-out, participation in the Bright Data network will cease within a reasonable period, and no further peer network activity will be initiated from your device.
 
 # Interaction Monitoring and Diagnostics
 
