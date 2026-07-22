@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Deletion Request | GSPTeck</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="./stylesheets/style.css" />
+    <style>
+      /* Account Deletion Page Specific Styles */
+      .deletion-container {
+        max-width: 620px;
+        margin: 60px auto 80px;
+        padding: 0 20px;
+      }
+
+      .deletion-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .deletion-header h1 {
+        font-size: 28px;
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+      }
+
+      .deletion-header p {
+        margin: 0;
+        color: #555;
+        font-size: 14px;
+      }
+
+      .warning-box {
+        background-color: #fff3cd;
+        border: 2px solid #856404;
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin-bottom: 32px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .warning-box strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+      }
+
+      .deletion-form {
+        background: #fff;
+        border: 3px solid var(--textColor);
+        border-radius: 12px;
+        padding: 32px 28px;
+      }
+
+      .form-group {
+        margin-bottom: 22px;
+      }
+
+      .form-group:last-of-type {
+        margin-bottom: 10px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+
+      .form-group .label-hint {
+        font-weight: 400;
+        color: #666;
+        font-size: 12.5px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 11px 14px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 15px;
+        border: 2px solid var(--textColor);
+        border-radius: 6px;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      .form-group textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #000;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 22px 0 8px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        font-size: 13.5px;
+        line-height: 1.4;
+        cursor: pointer;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 14px 24px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 15px;
+        font-weight: 600;
+        border: 3px solid var(--textColor);
+        border-radius: 8px;
+        background: var(--textColor);
+        color: var(--backgroundColor);
+        cursor: pointer;
+        transition: all 0.1s ease;
+        margin-top: 12px;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        background: #000;
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .form-footer {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 13px;
+        color: #555;
+      }
+
+      .form-footer a {
+        color: var(--textColor);
+        text-decoration: underline;
+      }
+
+      /* Status Messages */
+      .status-message {
+        margin-top: 24px;
+        padding: 16px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: none;
+      }
+
+      .status-message.success {
+        background-color: #d4edda;
+        border: 2px solid #155724;
+        color: #155724;
+      }
+
+      .status-message.error {
+        background-color: #f8d7da;
+        border: 2px solid #721c24;
+        color: #721c24;
+      }
+
+      .status-message.show {
+        display: block;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 30px;
+        font-size: 14px;
+        color: var(--textColor);
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      @media only screen and (max-width: 480px) {
+        .deletion-container {
+          margin-top: 40px;
+        }
+        .deletion-form {
+          padding: 22px 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deletion-container">
+      <a href="/" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to home</span>
+      </a>
+
+      <div class="deletion-header">
+        <h1>Request Account Deletion</h1>
+        <p>Permanent removal of your account and associated data</p>
+      </div>
+
+      <div class="warning-box">
+        <strong><i class="fa-solid fa-exclamation-triangle"></i> Important Warning</strong>
+        Account deletion is permanent. Once processed, your account, profile information, and most associated data will be deleted and cannot be recovered.
+        Some information may be retained for legal, security, or fraud prevention purposes as described in our Privacy Policy.
+      </div>
+
+      <form id="deletion-form" class="deletion-form" novalidate>
+        <div class="form-group">
+          <label for="email">
+            Email Address <span style="color:#c00">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="username">
+            Username or User ID <span class="label-hint">(optional but helpful)</span>
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="your-username or user_12345"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="product">
+            Product / Service <span style="color:#c00">*</span>
+          </label>
+          <select id="product" name="product" required>
+            <option value="">-- Select the app or website --</option>
+            <option value="CoinDrop">CoinDrop</option>
+            <option value="IOU">IOU</option>
+            <option value="CAUN">CAUN</option>
+            <option value="TuneBinder">TuneBinder</option>
+            <option value="Other">Other GSPTeck Service</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reason">
+            Reason for deletion <span class="label-hint">(optional)</span>
+          </label>
+          <select id="reason" name="reason">
+            <option value="">-- Select a reason --</option>
+            <option value="No longer need the service">No longer need the service</option>
+            <option value="Privacy concerns">Privacy concerns</option>
+            <option value="Found a better alternative">Found a better alternative</option>
+            <option value="Too many emails / notifications">Too many emails / notifications</option>
+            <option value="Technical issues">Technical issues</option>
+            <option value="Security concerns">Security concerns</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="details">
+            Additional details <span class="label-hint">(optional)</span>
+          </label>
+          <textarea
+            id="details"
+            name="details"
+            placeholder="Any extra information that might help us process your request..."
+          ></textarea>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="confirm" name="confirm" required />
+          <label for="confirm">
+            I understand that deleting my account is permanent and that I will lose access to all data associated with it.
+          </label>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="confirm2" name="confirm2" required />
+          <label for="confirm2">
+            I have read and agree to the permanent nature of this request as described above and in the
+            <a href="/policy" target="_blank">Privacy Policy</a>.
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="btn-text">Submit Deletion Request</span>
+        </button>
+
+        <div id="status-message" class="status-message"></div>
+      </form>
+
+      <div class="form-footer">
+        Your request will be reviewed and processed within a reasonable timeframe.<br />
+        For questions, contact <a href="mailto:gspteck@gmail.com">gspteck@gmail.com</a>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("deletion-form");
+      const statusEl = document.getElementById("status-message");
+      const submitBtn = document.getElementById("submit-btn");
+      const btnText = document.getElementById("btn-text");
+
+      function showStatus(message, type) {
+        statusEl.textContent = message;
+        statusEl.className = "status-message " + type + " show";
+      }
+
+      function clearStatus() {
+        statusEl.textContent = "";
+        statusEl.className = "status-message";
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        clearStatus();
+
+        // Basic client validation
+        const email = form.email.value.trim();
+        const product = form.product.value;
+        const confirm1 = form.confirm.checked;
+        const confirm2 = form.confirm2.checked;
+
+        if (!email) {
+          showStatus("Please provide your email address.", "error");
+          form.email.focus();
+          return;
+        }
+
+        if (!product) {
+          showStatus("Please select the product or service.", "error");
+          form.product.focus();
+          return;
+        }
+
+        if (!confirm1 || !confirm2) {
+          showStatus("Please confirm both checkboxes to continue.", "error");
+          return;
+        }
+
+        // Prepare payload
+        const payload = {
+          email: email,
+          username: form.username.value.trim() || null,
+          product: product,
+          reason: form.reason.value || null,
+          details: form.details.value.trim() || null,
+          requestedAt: new Date().toISOString(),
+        };
+
+        // Disable button during request
+        submitBtn.disabled = true;
+        btnText.textContent = "Submitting...";
+
+        try {
+          const res = await fetch("/api/request-deletion", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            form.reset();
+            showStatus(
+              "Your account deletion request has been received. We will process it shortly and may contact you at the provided email for verification.",
+              "success"
+            );
+          } else {
+            showStatus(
+              data.message || "Something went wrong. Please try again or email gspteck@gmail.com.",
+              "error"
+            );
+          }
+        } catch (err) {
+          showStatus(
+            "Network error. Please check your connection and try again, or email gspteck@gmail.com directly.",
+            "error"
+          );
+        } finally {
+          submitBtn.disabled = false;
+          btnText.textContent = "Submit Deletion Request";
+        }
+      });
+
+      // Allow Enter key in textareas to submit only on Ctrl/Cmd+Enter
+      form.details.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          form.requestSubmit();
+        }
+      });
+    </script>
+  </body>
+</html>

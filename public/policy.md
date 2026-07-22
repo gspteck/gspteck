@@ -18,6 +18,17 @@ This Privacy Policy applies only to information collected through the Services a
 
 ---
 
+# Our Products
+
+This Privacy Policy applies to the following GSPTeck products and services (and any future services we may offer):
+
+- CoinDrop
+- IOU
+- CAUN
+- TuneBinder
+
+---
+
 # Information We Collect
 
 We may collect information that you voluntarily provide, information automatically collected during use of the Services, information obtained from third parties, and information derived from analytics or behavioral analysis.

@@ -149,6 +149,191 @@ border-radius: 15px;
 	text-align: center;
 }
 
+/*  Account Deletion Page (shared styles) */
+.deletion-container {
+	max-width: 620px;
+	margin: 60px auto 80px;
+	padding: 0 20px;
+}
+
+.deletion-header {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.deletion-header h1 {
+	font-size: 28px;
+	margin: 0 0 8px 0;
+	line-height: 1.2;
+}
+
+.deletion-header p {
+	margin: 0;
+	color: #555;
+	font-size: 14px;
+}
+
+.warning-box {
+	background-color: #fff3cd;
+	border: 2px solid #856404;
+	border-radius: 8px;
+	padding: 16px 18px;
+	margin-bottom: 32px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.warning-box strong {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 15px;
+}
+
+.deletion-form {
+	background: #fff;
+	border: 3px solid var(--textColor);
+	border-radius: 12px;
+	padding: 32px 28px;
+}
+
+.form-group {
+	margin-bottom: 22px;
+}
+
+.form-group label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 6px;
+	font-size: 14px;
+}
+
+.form-group .label-hint {
+	font-weight: 400;
+	color: #666;
+	font-size: 12.5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+	width: 100%;
+	padding: 11px 14px;
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 15px;
+	border: 2px solid var(--textColor);
+	border-radius: 6px;
+	background: #fff;
+	box-sizing: border-box;
+}
+
+.form-group textarea {
+	min-height: 96px;
+	resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+	outline: none;
+	border-color: #000;
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.checkbox-group {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 22px 0 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	margin-top: 2px;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.checkbox-group label {
+	font-size: 13.5px;
+	line-height: 1.4;
+	cursor: pointer;
+}
+
+.submit-btn {
+	width: 100%;
+	padding: 14px 24px;
+	font-family: "IBM Plex Mono", monospace;
+	font-size: 15px;
+	font-weight: 600;
+	border: 3px solid var(--textColor);
+	border-radius: 8px;
+	background: var(--textColor);
+	color: var(--backgroundColor);
+	cursor: pointer;
+	transition: all 0.1s ease;
+	margin-top: 12px;
+}
+
+.submit-btn:hover:not(:disabled) {
+	background: #000;
+}
+
+.submit-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.form-footer {
+	text-align: center;
+	margin-top: 24px;
+	font-size: 13px;
+	color: #555;
+}
+
+.form-footer a {
+	color: var(--textColor);
+	text-decoration: underline;
+}
+
+.status-message {
+	margin-top: 24px;
+	padding: 16px 18px;
+	border-radius: 8px;
+	font-size: 14px;
+	display: none;
+}
+
+.status-message.success {
+	background-color: #d4edda;
+	border: 2px solid #155724;
+	color: #155724;
+}
+
+.status-message.error {
+	background-color: #f8d7da;
+	border: 2px solid #721c24;
+	color: #721c24;
+}
+
+.status-message.show {
+	display: block;
+}
+
+.back-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 30px;
+	font-size: 14px;
+	color: var(--textColor);
+	text-decoration: none;
+}
+
+.back-link:hover {
+	text-decoration: underline;
+}
+
 /*  Mobile CSS  */
 @media only screen and (max-width: 480px) {
     #data-container h1 {
@@ -188,5 +373,13 @@ border-radius: 15px;
     }
     .proj-stack {
         font-size: 12px;
+    }
+
+    /* Deletion page mobile */
+    .deletion-container {
+        margin-top: 40px;
+    }
+    .deletion-form {
+        padding: 22px 18px;
     }
 }
