@@ -280,6 +280,18 @@
           </select>
         </div>
 
+        <div class="form-group" id="other-product-group" style="display: none;">
+          <label for="other-product">
+            Specify service <span style="color:#c00">*</span>
+          </label>
+          <input
+            type="text"
+            id="other-product"
+            name="other-product"
+            placeholder="Please name the service or website"
+          />
+        </div>
+
         <div class="form-group">
           <label for="reason">
             Reason for deletion <span class="label-hint">(optional)</span>
@@ -341,6 +353,10 @@
       const submitBtn = document.getElementById("submit-btn");
       const btnText = document.getElementById("btn-text");
 
+      const productSelect = document.getElementById("product");
+      const otherGroup = document.getElementById("other-product-group");
+      const otherInput = document.getElementById("other-product");
+
       function showStatus(message, type) {
         statusEl.textContent = message;
         statusEl.className = "status-message " + type + " show";
@@ -351,7 +367,21 @@
         statusEl.className = "status-message";
       }
 
-      form.addEventListener("submit", async function (e) {
+      // Show/hide manual service name field when "Other" is selected
+      productSelect.addEventListener("change", function () {
+        if (productSelect.value === "Other") {
+          otherGroup.style.display = "block";
+          otherInput.required = true;
+          // Focus the new field for better UX
+          setTimeout(() => otherInput.focus(), 0);
+        } else {
+          otherGroup.style.display = "none";
+          otherInput.required = false;
+          otherInput.value = "";
+        }
+      });
+
+      form.addEventListener("submit", function (e) {
         e.preventDefault();
         clearStatus();
 
@@ -378,52 +408,56 @@
           return;
         }
 
-        // Prepare payload
-        const payload = {
-          email: email,
-          username: form.username.value.trim() || null,
-          product: product,
-          reason: form.reason.value || null,
-          details: form.details.value.trim() || null,
-          requestedAt: new Date().toISOString(),
-        };
-
-        // Disable button during request
-        submitBtn.disabled = true;
-        btnText.textContent = "Submitting...";
-
-        try {
-          const res = await fetch("/api/request-deletion", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          });
-
-          const data = await res.json().catch(() => ({}));
-
-          if (res.ok) {
-            form.reset();
-            showStatus(
-              "Your account deletion request has been received. We will process it shortly and may contact you at the provided email for verification.",
-              "success"
-            );
-          } else {
-            showStatus(
-              data.message || "Something went wrong. Please try again or email gspteck@gmail.com.",
-              "error"
-            );
+        // Resolve final product name (handle "Other")
+        let finalProduct = product;
+        if (product === "Other") {
+          const otherVal = otherInput.value.trim();
+          if (!otherVal) {
+            showStatus("Please specify the service name.", "error");
+            otherInput.focus();
+            return;
           }
-        } catch (err) {
+          finalProduct = otherVal;
+        }
+
+        // Collect form values
+        const username = form.username.value.trim();
+        const reason = form.reason.value;
+        const details = form.details.value.trim();
+
+        // Build a clean, readable email body
+        let body = "Account Deletion Request\n\n";
+        body += `Email: ${email}\n`;
+        body += `Username / User ID: ${username || "(not provided)"}\n`;
+        body += `Product: ${finalProduct}\n`;
+        body += `Reason: ${reason || "(not provided)"}\n`;
+        body += `Additional details:\n${details || "(none)"}\n\n`;
+        body += `Requested at: ${new Date().toISOString()}\n`;
+        body += `Submitted from: GSPTeck /delete-account page\n`;
+
+        const subject = encodeURIComponent(`Account Deletion Request - ${finalProduct}`);
+        const bodyEncoded = encodeURIComponent(body);
+
+        const mailtoLink = `mailto:gspteck@gmail.com?subject=${subject}&body=${bodyEncoded}`;
+
+        // Trigger the user's email client
+        submitBtn.disabled = true;
+        btnText.textContent = "Opening email...";
+
+        window.location.href = mailtoLink;
+
+        // Show confirmation after triggering mailto
+        setTimeout(() => {
+          form.reset();
+          otherGroup.style.display = "none";
+          otherInput.required = false;
           showStatus(
-            "Network error. Please check your connection and try again, or email gspteck@gmail.com directly.",
-            "error"
+            "Your email client should now be open. Please review the message and send it to complete your account deletion request.",
+            "success"
           );
-        } finally {
           submitBtn.disabled = false;
           btnText.textContent = "Submit Deletion Request";
-        }
+        }, 700);
       });
 
       // Allow Enter key in textareas to submit only on Ctrl/Cmd+Enter
