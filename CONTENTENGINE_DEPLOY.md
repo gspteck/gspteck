@@ -38,3 +38,7 @@ python3 ../scripts/publish_contentengine.py --project gspteck ...
 ```
 
 (gspteck publish is enabled once the live webhook exists.)
+
+## Status (2026-09-21)
+
+Firebase publish for gspteck is **authorized**. After merge: set `CONTENTENGINE_SECRET`, then `firebase deploy --only functions,hosting`.
