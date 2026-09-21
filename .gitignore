@@ -4,3 +4,6 @@ node_modules
 .firebaserc
 firebase.json
 
+secrets/
+*.CONTENTENGINE_SECRET
+functions/node_modules/
