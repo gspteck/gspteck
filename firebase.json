@@ -4,8 +4,7 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "sitemap.xml"
+      "**/node_modules/**"
     ],
     "headers": [
       {
@@ -37,6 +36,23 @@
             "value": "strict-origin-when-cross-origin"
           }
         ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/auto-x",
+        "destination": "https://autox.network/",
+        "type": 301
+      },
+      {
+        "source": "/auto-x/",
+        "destination": "https://autox.network/",
+        "type": 301
+      },
+      {
+        "source": "/auto-x/**",
+        "destination": "https://autox.network/",
+        "type": 301
       }
     ],
     "rewrites": [

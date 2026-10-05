@@ -3,7 +3,7 @@ const { defineSecret } = require("firebase-functions/params");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 const express = require("express");
-const { extractMonolingualPost, pickTranslation, injectLanguageSelector } = require("./content-extract");
+const { extractMonolingualPost, stripLanguageSwitcher } = require("./content-extract");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -11,6 +11,7 @@ const db = admin.firestore();
 // === Published content configuration (makes functions reusable across projects) ===
 // Change these values (or load via functions config) when reusing for a future dedicated publishing site.
 const PUBLISHED_BASE_URL = "https://gspteck.com";
+const RICHADS_SITE_ID = "407899";
 const PUBLISHED_COLLECTION = "gspteckPages";
 // The root path for the "landing" of published content on the dedicated site.
 const PUBLISHED_LANDING = "/";
@@ -179,6 +180,22 @@ function ensureCanonicalLink(html, canonicalHref) {
   return `${linkTag}\n${html}`;
 }
 
+/**
+ * Inject RichAds pop script into <head> once (idempotent).
+ * Posts only — call from buildPublishedHtml / renderPublishedPage.
+ * Never use on static landings (index.html, marketing, policy, etc.).
+ */
+function ensureRichAdsInHead(html, siteId) {
+  if (!html || typeof html !== "string" || !siteId) return html;
+  if (/richads-pu-ob\.js/i.test(html)) return html;
+  const tag = `<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="987835" data-siteid="${String(siteId)}" async data-cfasync="false"></script>`;
+  if (/<head[^>]*>/i.test(html)) {
+    return html.replace(/<head[^>]*>/i, (m) => `${m}\n  ${tag}`);
+  }
+  return `${tag}\n${html}`;
+}
+
+
 function buildPublishedHtml(post, relatedArticles) {
   const title = post.title || "Published Page";
   const description = post.meta_description || "";
@@ -212,7 +229,7 @@ function buildPublishedHtml(post, relatedArticles) {
         html = html + relatedHtml;
       }
     }
-    return ensureCanonicalLink(html, canonicalHref);
+    return ensureRichAdsInHead(ensureCanonicalLink(html, canonicalHref), RICHADS_SITE_ID);
   }
 
   // Build a clean standalone HTML document
@@ -224,7 +241,7 @@ function buildPublishedHtml(post, relatedArticles) {
       const trimmedBody = bodyHtml.trim();
       const bodyHasStartingH1 = /^<h1/i.test(trimmedBody);
 
-      return `<!DOCTYPE html>
+      return ensureRichAdsInHead(`<!DOCTYPE html>
     <html lang="${escapeHtml(post.language || "en")}">
     <head>
       <meta charset="UTF-8">
@@ -251,7 +268,7 @@ function buildPublishedHtml(post, relatedArticles) {
       </article>
       ${relatedHtml}
     </body>
-  </html>`;
+  </html>`, RICHADS_SITE_ID);
 }
 
 function sanitizeSlug(raw) {
@@ -281,36 +298,17 @@ async function savePublishedPage(slug, html, extra = {}) {
     publishedAt: now,
     updatedAt: now,
   };
-  if (extra.translations) doc.translations = extra.translations;
+  // English-only. merge:true would otherwise keep a legacy translations map.
+  doc.translations = admin.firestore.FieldValue.delete();
   if (extra.related_articles) doc.related_articles = extra.related_articles;
   await db.collection(PUBLISHED_COLLECTION).doc(slug).set(doc, { merge: true });
 }
 
-/** Render a published page for a requested language, falling back to stored
- *  english html when translations aren't stored (older docs). */
-function renderPublishedPage(page, lang, canonicalHref) {
-  if (!page) return null;
-  if (page.translations && typeof page.translations === "object") {
-    const translation = pickTranslation(page, lang);
-    if (translation) {
-      const monoPost = {
-        title: translation.title || "Published Page",
-        meta_description: translation.meta_description || "",
-        body_html: translation.body_html || "",
-        json_ld: translation.json_ld || null,
-        language: lang,
-      };
-      let html = buildPublishedHtml(monoPost, page.related_articles);
-      html = injectLanguageSelector(html, page.translations, lang);
-      return ensureCanonicalLink(html, canonicalHref);
-    }
-  }
-  if (!page.html) return null;
-  let html = page.html;
-  if (page.translations && typeof page.translations === "object") {
-    html = injectLanguageSelector(html, page.translations, "en");
-  }
-  return ensureCanonicalLink(html, canonicalHref);
+/** Serve the stored English page. Legacy translation maps are not rendered. */
+function renderPublishedPage(page, canonicalHref) {
+  if (!page || !page.html) return null;
+  const html = stripLanguageSwitcher(page.html);
+  return ensureRichAdsInHead(ensureCanonicalLink(html, canonicalHref), RICHADS_SITE_ID);
 }
 
 async function getPublishedPage(slug) {
@@ -368,6 +366,18 @@ async function getPublishedSitemapEntries() {
       loc: `${PUBLISHED_BASE_URL}/`,
       lastmod: today,
       priority: "0.9",
+      changefreq: "monthly",
+    },
+    {
+      loc: `${PUBLISHED_BASE_URL}/policy`,
+      lastmod: today,
+      priority: "0.5",
+      changefreq: "monthly",
+    },
+    {
+      loc: `${PUBLISHED_BASE_URL}/delete-account`,
+      lastmod: today,
+      priority: "0.4",
       changefreq: "monthly",
     },
   ];
@@ -618,8 +628,7 @@ contentengineApp.all(/.*/, async (req, res) => {
         return;
       }
 
-      // --- Extract monolingual content from translations (contentengine sends
-      // the body under post.translations) ---
+      // English only. Flat title / body_html / meta_description are the source.
       const monoPost = extractMonolingualPost(post);
 
       // Use the generic published base URL (root-level slug on the dedicated hosting target)
@@ -638,7 +647,6 @@ contentengineApp.all(/.*/, async (req, res) => {
       // related_articles: internal links contentengine expects on the live page for crawl paths
       const fullHtml = buildPublishedHtml(monoPost, payload.related_articles);
       await savePublishedPage(slug, fullHtml, {
-        translations: post.translations || null,
         related_articles: payload.related_articles || [],
       });
 
@@ -734,6 +742,13 @@ exports.servePublishedPage = onRequest(
       slug = sanitizeSlug(req.query.slug);
     }
 
+    // Belt-and-suspenders: /auto-x lives at autox.network (Hosting redirects also cover this).
+    if (slug === "auto-x" || /^\/auto-x(\/|$|\.html)/i.test(p)) {
+      res.set("Cache-Control", "public, max-age=3600");
+      res.redirect(301, "https://autox.network/");
+      return;
+    }
+
     if (!slug) {
       // Still collapse alternate hosts hitting unknown paths toward the canonical site.
       if (host && !isCanonicalPublishedHost(host)) {
@@ -760,18 +775,13 @@ exports.servePublishedPage = onRequest(
 
     try {
       const page = await getPublishedPage(slug);
-      if (!page || (!page.html && !page.translations)) {
+      if (!page || !page.html) {
         res.status(404).send("Page not found");
         return;
       }
 
       const canonicalHref = publishedCanonicalUrl(cleanPath);
-      // Resolve requested language from ?lang= (default en). Accept only a clean
-      // 2-letter code; ignore anything else (falls back to en anyway).
-      const reqLang = (req.query && req.query.lang && /^[a-z]{2,3}$/i.test(String(req.query.lang)))
-        ? String(req.query.lang).toLowerCase()
-        : "en";
-      const html = renderPublishedPage(page, reqLang, canonicalHref);
+      const html = renderPublishedPage(page, canonicalHref);
       if (!html) {
         res.status(404).send("Page not found");
         return;
