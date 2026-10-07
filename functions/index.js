@@ -340,6 +340,18 @@ async function listPublishedPagesForSitemap() {
   });
 }
 
+// === Homepage "Latest articles" + /blog archive (server-rendered, no RichAds) ===
+const path = require("path");
+const { createSiteIndex, BLOG_PATH } = require("./site-index");
+const siteIndex = createSiteIndex({
+  db,
+  collection: PUBLISHED_COLLECTION,
+  baseUrl: PUBLISHED_BASE_URL,
+  siteName: "GSPTeck",
+  isPublishableSlug: (slug) => sanitizeSlug(slug) === slug && slug !== "auto-x",
+  homeTemplatePath: path.join(__dirname, "templates", "home.html"),
+});
+
 // === Shared sitemap helpers (use PUBLISHED_* constants for reuse) ===
 // Served live by publishedSitemapXml / publishedRobotsTxt on each request.
 // contentengine post.publish | post.update | post.delete write Firestore; the next
@@ -379,6 +391,12 @@ async function getPublishedSitemapEntries() {
       lastmod: today,
       priority: "0.4",
       changefreq: "monthly",
+    },
+    {
+      loc: `${PUBLISHED_BASE_URL}${BLOG_PATH}`,
+      lastmod: today,
+      priority: "0.7",
+      changefreq: "daily",
     },
   ];
   try {
@@ -731,6 +749,18 @@ exports.servePublishedPage = onRequest(
 
     const p = req.path || "";
     const host = getRequestHost(req);
+
+    // Landings rendered here: "/" (homepage with latest articles), "/index.html" (301), "/blog".
+    if (
+      await siteIndex.handleLanding(
+        req,
+        res,
+        (r, target) => redirectToPublishedCanonical(r, target),
+        !host || isCanonicalPublishedHost(host)
+      )
+    ) {
+      return;
+    }
 
     // Match root-level slug or slug.html  (e.g. /my-post or /my-post.html)
     // IMPORTANT: skip the root "/" itself — hosting will serve index.html for that.
