@@ -406,5 +406,5 @@ Continued use of the Services after updates constitutes acceptance of the revise
 For questions, requests, or concerns regarding this Privacy Policy or data practices, contact:
 
 **GSPTeck**  
-gspteck@gmail.com  
+themaker@gspteck.com  
 Contrada Chianola, Cassano Irpino, Avellino, Italia

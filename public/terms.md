@@ -318,5 +318,5 @@ Continued use of the Services constitutes acceptance of revised Terms.
 For questions regarding these Terms, contact:
 
 **GSPTeck**  
-gspteck@gmail.com  
+themaker@gspteck.com  
 Contrada Chianola, Cassano Irpino, Avellino, Italia
