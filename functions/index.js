@@ -350,6 +350,12 @@ const siteIndex = createSiteIndex({
   siteName: "GSPTeck",
   isPublishableSlug: (slug) => sanitizeSlug(slug) === slug && slug !== "auto-x",
   homeTemplatePath: path.join(__dirname, "templates", "home.html"),
+  blog: {
+    title: "Flutter + Firebase Guides for Indie Developers | GSPTeck",
+    h1: "Flutter and Firebase guides for indie developers",
+    description: "Practical Flutter and Firebase guides for solo developers: Google Play testing and releases, Crashlytics, app size, Firestore costs and rules, Cloud Functions secrets, App Check and Remote Config.",
+    intro: "Notes and checklists for shipping and running Flutter apps on Firebase as a solo developer. The Google Play guides cover closed testing, staged rollouts, target API deadlines, Data safety forms, lost upload keys and Android vitals. The Firebase guides cover Firestore read costs, security rules and backups, Cloud Functions secrets and budgets, App Check, Remote Config kill switches, FCM tokens and Crashlytics triage. Each one is written for someone without a team, with the steps in the order you would do them.",
+  },
 });
 
 // === Shared sitemap helpers (use PUBLISHED_* constants for reuse) ===

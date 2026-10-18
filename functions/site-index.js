@@ -67,6 +67,8 @@ function isoDay(ms) {
  */
 function createSiteIndex(opts) {
   const { db, collection, baseUrl, siteName, isPublishableSlug, homeTemplatePath } = opts;
+  // Optional hand-written /blog copy: { title, h1, description, intro } (intro is plain text).
+  const blog = opts.blog || {};
   let cache = null;
   let template = null;
 
@@ -115,7 +117,9 @@ function createSiteIndex(opts) {
   }
 
   function renderBlog(items) {
-    const title = `All ${siteName} articles`;
+    const title = blog.title || `All ${siteName} articles`;
+    const h1 = blog.h1 || title;
+    const description = blog.description || `Every published ${siteName} article, newest first.`;
     const canonical = `${baseUrl}${BLOG_PATH}`;
     const list = items
       .map(
@@ -133,7 +137,7 @@ function createSiteIndex(opts) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)}</title>
   <link rel="canonical" href="${escapeHtml(canonical)}">
-  <meta name="description" content="${escapeHtml(`Every published ${siteName} article, newest first.`)}">
+  <meta name="description" content="${escapeHtml(description)}">
   <style>
     :root { color-scheme: light dark; }
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 780px; margin: 40px auto; padding: 0 16px; }
@@ -141,13 +145,15 @@ function createSiteIndex(opts) {
     li { margin: 0.75rem 0; }
     time { color: #6b7280; font-size: 0.9em; margin-left: 0.25rem; }
     .desc { color: #6b7280; font-size: 0.95em; }
+    .intro { font-size: 1.05em; }
+    .count { color: #6b7280; }
   </style>
 </head>
 <body>
   <nav><a href="${escapeHtml(baseUrl)}/">${escapeHtml(siteName)} home</a></nav>
   <main>
-    <h1>${escapeHtml(title)}</h1>
-    <p>${items.length} articles, newest first.</p>
+    <h1>${escapeHtml(h1)}</h1>
+${blog.intro ? `    <p class="intro">${escapeHtml(blog.intro)}</p>\n` : ""}    <p class="count">${items.length} articles, newest first.</p>
     <ul>
 ${list}
     </ul>
