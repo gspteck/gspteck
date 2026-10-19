@@ -328,15 +328,17 @@ async function listPublishedPagesForSitemap() {
     .collection(PUBLISHED_COLLECTION)
     .select("updatedAt", "publishedAt")
     .get();
-  const today = new Date().toISOString().split("T")[0];
   return snap.docs.map((d) => {
     const data = d.data() || {};
     const ts = data.updatedAt || data.publishedAt;
-    let lastmod = today;
+    let lastmod = null;
     if (ts && typeof ts.toDate === "function") {
       lastmod = ts.toDate().toISOString().split("T")[0];
     }
-    return { slug: d.id, lastmod };
+    // Publish date drives the homepage/blog "latest" lists (same order as the article index).
+    const pts = data.publishedAt || data.updatedAt;
+    const published = pts && typeof pts.toDate === "function" ? pts.toDate().toISOString().split("T")[0] : null;
+    return { slug: d.id, lastmod, published };
   });
 }
 
@@ -377,49 +379,70 @@ function toIsoDate(value) {
   return new Date().toISOString().split("T")[0];
 }
 
+// Real last-content-change dates for the homepage, /blog and static pages.
+// functions/static-lastmod.json is written at deploy time by scripts/update-static-lastmod.cjs
+// (firebase.json functions predeploy) from the git history of each page's own files.
+// Sitemap lastmod never uses build or request time.
+const STATIC_LASTMOD = (() => {
+  try {
+    return require("./static-lastmod.json").pages || {};
+  } catch (e) {
+    console.error("[sitemap] static-lastmod.json missing", e);
+    return {};
+  }
+})();
+
+/** Newest of the given YYYY-MM-DD dates (ignores empty values); null when none. */
+function newestIsoDate(...dates) {
+  const valid = dates.filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d));
+  return valid.length ? valid.sort().pop() : null;
+}
+
 async function getPublishedSitemapEntries() {
-  const today = toIsoDate(new Date());
+  let pages;
+  try {
+    pages = await listPublishedPagesForSitemap();
+  } catch (e) {
+    console.error("[sitemap] failed to list published pages", e);
+    pages = [];
+  }
+  // Stable order helps diffs / Search Console
+  pages.sort((a, b) => a.slug.localeCompare(b.slug));
+  // Homepage and /blog list the latest posts: newest of the page's own last edit and the newest post publish date.
+  const newestPost = newestIsoDate(...pages.map((p) => p.published));
   const entries = [
     {
       loc: `${PUBLISHED_BASE_URL}/`,
-      lastmod: today,
+      lastmod: newestIsoDate(STATIC_LASTMOD.home, newestPost),
       priority: "0.9",
       changefreq: "monthly",
     },
     {
       loc: `${PUBLISHED_BASE_URL}/policy`,
-      lastmod: today,
+      lastmod: newestIsoDate(STATIC_LASTMOD.policy),
       priority: "0.5",
       changefreq: "monthly",
     },
     {
       loc: `${PUBLISHED_BASE_URL}/delete-account`,
-      lastmod: today,
+      lastmod: newestIsoDate(STATIC_LASTMOD["delete-account"]),
       priority: "0.4",
       changefreq: "monthly",
     },
     {
       loc: `${PUBLISHED_BASE_URL}${BLOG_PATH}`,
-      lastmod: today,
+      lastmod: newestIsoDate(STATIC_LASTMOD.blog, newestPost),
       priority: "0.7",
       changefreq: "daily",
     },
   ];
-  try {
-    const pages = await listPublishedPagesForSitemap();
-    // Stable order helps diffs / Search Console
-    pages.sort((a, b) => a.slug.localeCompare(b.slug));
-    for (const p of pages) {
-      entries.push({
-        loc: `${PUBLISHED_BASE_URL}/${p.slug}`,
-        lastmod: p.lastmod || today,
-        priority: "0.8",
-        changefreq: "monthly",
-      });
-    }
-  } catch (e) {
-    console.error("[sitemap] failed to list published pages", e);
-    // continue with just the landing page
+  for (const p of pages) {
+    entries.push({
+      loc: `${PUBLISHED_BASE_URL}/${p.slug}`,
+      lastmod: p.lastmod,
+      priority: "0.8",
+      changefreq: "monthly",
+    });
   }
   return entries;
 }
@@ -430,10 +453,9 @@ function buildSitemapXml(entries) {
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
   ];
   for (const u of entries) {
-    const lastmod = u.lastmod || toIsoDate(new Date());
     xml.push("  <url>");
     xml.push(`    <loc>${u.loc}</loc>`);
-    xml.push(`    <lastmod>${lastmod}</lastmod>`);
+    if (u.lastmod) xml.push(`    <lastmod>${u.lastmod}</lastmod>`);
     xml.push(`    <changefreq>${u.changefreq}</changefreq>`);
     xml.push(`    <priority>${u.priority}</priority>`);
     xml.push("  </url>");

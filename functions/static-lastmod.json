@@ -1,0 +1,23 @@
+{
+  "generatedBy": "scripts/update-static-lastmod.cjs",
+  "sources": {
+    "home": [
+      "functions/templates/home.html"
+    ],
+    "blog": [
+      "functions/site-index.js"
+    ],
+    "policy": [
+      "public/policy.html"
+    ],
+    "delete-account": [
+      "public/delete-account.html"
+    ]
+  },
+  "pages": {
+    "home": "2026-10-18",
+    "blog": "2026-10-18",
+    "policy": "2026-10-14",
+    "delete-account": "2026-10-14"
+  }
+}
