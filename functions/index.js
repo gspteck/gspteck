@@ -32,6 +32,18 @@ function getBucket() {
 // === Secret stored via: firebase functions:secrets:set CONTENTENGINE_SECRET ===
 const contentengineSecret = defineSecret("CONTENTENGINE_SECRET");
 
+// === Agent analytics (Scope Journeys-style AI-agent visit log; see agent-analytics.js) ===
+// Server-side only: counts every hit in a daily doc, keeps capped 30-day journeys for bots/agents.
+// Hashed IPs only, Admin SDK writes only (Firestore rules stay deny-all). No translation, no HTML changes.
+const { withAgentAnalytics } = require("./agent-analytics");
+const AGENT_ANALYTICS = {
+  getDb: () => db,
+  admin,
+  getSecret: () => contentengineSecret.value(),
+  timeoutMs: 2500,
+  sites: [{"site": "gspteck.com", "hosts": ["gspteck.com", "www.gspteck.com", "gspteck-a9e49.web.app", "gspteck-a9e49.firebaseapp.com"]}],
+};
+
 // === contentengine contract v3 helpers ===
 
 function getContentEngineHeaders(req) {
@@ -770,8 +782,9 @@ exports.servePublishedPage = onRequest(
   {
     region: "us-central1",
     maxInstances: 30,
+    secrets: [contentengineSecret],
   },
-  async (req, res) => {
+  withAgentAnalytics(async (req, res) => {
     let slug = null;
     let requestedHtmlExt = false;
 
@@ -853,7 +866,7 @@ exports.servePublishedPage = onRequest(
       console.error("[servePublishedPage] error", err);
       res.status(500).send("Error loading page");
     }
-  }
+  }, AGENT_ANALYTICS)
 );
 
 // === 3. Published site robots.txt ===
@@ -896,7 +909,7 @@ exports.publishedSitemapXml = onRequest(
     region: "us-central1",
     maxInstances: 10,
   },
-  async (req, res) => {
+  withAgentAnalytics(async (req, res) => {
     const host = getRequestHost(req);
     if (host && !isCanonicalPublishedHost(host)) {
       redirectToPublishedCanonical(res, "/sitemap.xml");
@@ -909,7 +922,7 @@ exports.publishedSitemapXml = onRequest(
 
     const entries = await getPublishedSitemapEntries();
     res.status(200).send(buildSitemapXml(entries));
-  }
+  }, AGENT_ANALYTICS)
 );
 
 // Re-export all bot functions so they are discovered and deployed by Firebase
