@@ -210,6 +210,10 @@ function ensureRichAdsInHead(html, siteId) {
 
 function buildPublishedHtml(post, relatedArticles) {
   const title = post.title || "Published Page";
+  // <title> (and og:title) may use the shorter optional seo_title; the H1 stays post.title.
+  const seoTitle = (typeof post.seo_title === "string" && post.seo_title.replace(/\s+/g, " ").trim().length && post.seo_title.length <= 120)
+    ? post.seo_title.replace(/\s+/g, " ").trim()
+    : title;
   const description = post.meta_description || "";
   const bodyHtml = post.body_html || "";
   const jsonLd = post.json_ld ? JSON.stringify(post.json_ld) : null;
@@ -225,6 +229,9 @@ function buildPublishedHtml(post, relatedArticles) {
   if (looksComplete) {
     // Inject ld+json into head if we have it and a head tag exists
     let html = bodyHtml;
+    if (seoTitle !== title && /<title[^>]*>[\s\S]*?<\/title>/i.test(html)) {
+      html = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${escapeHtml(seoTitle)}</title>`);
+    }
     if (jsonLd) {
       const script = `<script type="application/ld+json">${jsonLd}</script>`;
       if (/<head[^>]*>/i.test(html)) {
@@ -258,7 +265,7 @@ function buildPublishedHtml(post, relatedArticles) {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${escapeHtml(title)}</title>
+      <title>${escapeHtml(seoTitle)}</title>
       ${description ? `<meta name="description" content="${escapeHtml(description)}">` : ""}
       ${ldScript}
       <style>
@@ -313,6 +320,8 @@ async function savePublishedPage(slug, html, extra = {}) {
   // English-only. merge:true would otherwise keep a legacy translations map.
   doc.translations = admin.firestore.FieldValue.delete();
   if (extra.related_articles) doc.related_articles = extra.related_articles;
+  // H1 title for homepage/blog listings (<title> may be a shorter seo_title).
+  if (typeof extra.title === "string" && extra.title.trim()) doc.title = extra.title.trim();
   await db.collection(PUBLISHED_COLLECTION).doc(slug).set(doc, { merge: true });
 }
 
@@ -706,6 +715,7 @@ contentengineApp.all(/.*/, async (req, res) => {
       const fullHtml = buildPublishedHtml(monoPost, payload.related_articles);
       await savePublishedPage(slug, fullHtml, {
         related_articles: payload.related_articles || [],
+        title: monoPost.title,
       });
 
       // Sitemap + robots are generated on the fly from Firestore by

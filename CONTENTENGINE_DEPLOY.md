@@ -42,3 +42,7 @@ python3 ../scripts/publish_contentengine.py --project gspteck ...
 ## Status (2026-09-21)
 
 Firebase publish for gspteck is **authorized**. After merge: set `CONTENTENGINE_SECRET`, then `firebase deploy --only functions,hosting`.
+
+## Optional seo_title (2026-10-25)
+
+`payload.post.seo_title` (optional) sets `<title>` only; the H1 and homepage and /blog listings keep `title`. Absent -> `<title>` = `title`. See ../SEO_TITLE.md in the content-engine workspace.

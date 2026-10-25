@@ -44,6 +44,18 @@ function extractDescription(html) {
   return c ? decodeBasicEntities(c[1]).trim() : "";
 }
 
+/**
+ * Time-limited homepage blocks: <!--UNTIL:YYYY-MM-DD--> ... <!--/UNTIL-->
+ * are shown up to and excluding that date (UTC), then dropped automatically.
+ */
+function stripExpiredBlocks(html, now = new Date()) {
+  const today = now.toISOString().split("T")[0];
+  return String(html).replace(
+    /<!--UNTIL:(\d{4}-\d{2}-\d{2})-->([\s\S]*?)<!--\/UNTIL-->\n?/g,
+    (_m, until, inner) => (today < until ? inner : "")
+  );
+}
+
 function tsToMillis(ts) {
   if (!ts) return 0;
   if (typeof ts.toMillis === "function") return ts.toMillis();
@@ -85,7 +97,8 @@ function createSiteIndex(opts) {
       items.push({
         slug,
         url: `${baseUrl}/${slug}`,
-        title: extractTitle(data.html, slug),
+        // Listings show the H1 (stored as data.title); <title> may be a shorter seo_title.
+        title: (typeof data.title === "string" && data.title.trim()) ? data.title.trim() : extractTitle(data.html, slug),
         description: extractDescription(data.html),
         ms,
         date: isoDay(ms),
@@ -111,7 +124,7 @@ function createSiteIndex(opts) {
 
   function renderHome(items) {
     if (template === null) template = fs.readFileSync(homeTemplatePath, "utf8");
-    return template
+    return stripExpiredBlocks(template)
       .replace("<!--LATEST_ARTICLES_ITEMS-->", latestItemsHtml(items))
       .replace(/<!--ARTICLE_COUNT-->/g, String(items.length));
   }
@@ -201,4 +214,4 @@ ${list}
   return { getIndex, renderHome, renderBlog, handleLanding };
 }
 
-module.exports = { createSiteIndex, BLOG_PATH, HOME_LATEST_COUNT };
+module.exports = { createSiteIndex, BLOG_PATH, HOME_LATEST_COUNT, stripExpiredBlocks };
