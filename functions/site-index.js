@@ -79,9 +79,22 @@ function isoDay(ms) {
  * @param {(slug:string)=>boolean} opts.isPublishableSlug  valid, not removed/410
  * @param {string} opts.homeTemplatePath   template with <!--LATEST_ARTICLES_ITEMS--> and <!--ARTICLE_COUNT-->
  */
+/** Turn the first occurrence of each hand-picked phrase in the (already escaped) /blog intro into a link. */
+function linkIntroPhrases(escapedIntro, links) {
+  let out = escapedIntro;
+  for (const l of links || []) {
+    const phrase = escapeHtml(l.phrase || "");
+    const i = phrase ? out.indexOf(phrase) : -1;
+    if (i === -1) continue;
+    out = `${out.slice(0, i)}<a href="${escapeHtml(l.url)}">${phrase}</a>${out.slice(i + phrase.length)}`;
+  }
+  return out;
+}
+
 function createSiteIndex(opts) {
   const { db, collection, baseUrl, siteName, isPublishableSlug, homeTemplatePath } = opts;
-  // Optional hand-written /blog copy: { title, h1, description, intro } (intro is plain text).
+  // Optional hand-written /blog copy: { title, h1, description, intro, introLinks } (intro is plain text;
+  // introLinks: [{ phrase, url }] links the first occurrence of each phrase).
   const blog = opts.blog || {};
   let cache = null;
   let template = null;
@@ -168,7 +181,7 @@ function createSiteIndex(opts) {
   <nav><a href="${escapeHtml(baseUrl)}/">${escapeHtml(siteName)} home</a></nav>
   <main>
     <h1>${escapeHtml(h1)}</h1>
-${blog.intro ? `    <p class="intro">${escapeHtml(blog.intro)}</p>\n` : ""}    <p class="count">${items.length} articles, newest first.</p>
+${blog.intro ? `    <p class="intro">${linkIntroPhrases(escapeHtml(blog.intro), blog.introLinks)}</p>\n` : ""}    <p class="count">${items.length} articles, newest first.</p>
     <ul>
 ${list}
     </ul>
