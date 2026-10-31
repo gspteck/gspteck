@@ -5,7 +5,18 @@
       "functions/templates/home.html"
     ],
     "blog": [
-      "functions/site-index.js"
+      {
+        "L": "/function renderBlog(/,/^  }$/:functions/site-index.js"
+      },
+      {
+        "L": "/^const siteIndex = createSiteIndex/,/^});$/:functions/index.js"
+      }
+    ],
+    "author/giosaia": [
+      "public/author/giosaia.html"
+    ],
+    "author/gspteck-editorial": [
+      "public/author/gspteck-editorial.html"
     ],
     "policy": [
       "public/policy.html"
@@ -15,8 +26,10 @@
     ]
   },
   "pages": {
-    "home": "2026-10-26",
-    "blog": "2026-10-25",
+    "home": "2026-10-31",
+    "blog": "2026-10-18",
+    "author/giosaia": "2026-10-31",
+    "author/gspteck-editorial": "2026-10-31",
     "policy": "2026-10-14",
     "delete-account": "2026-10-14"
   }
