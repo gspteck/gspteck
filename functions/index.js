@@ -311,24 +311,47 @@ function isValidHtml(str) {
 
 async function savePublishedPage(slug, html, extra = {}) {
   const now = admin.firestore.FieldValue.serverTimestamp();
+  const ref = db.collection(PUBLISHED_COLLECTION).doc(slug);
+  const existing = await ref.get();
   const doc = {
     slug,
     html,
-    publishedAt: now,
     updatedAt: now,
   };
+  // publishedAt is set on first save only; updates refresh updatedAt alone.
+  if (!existing.exists || !existing.get("publishedAt")) doc.publishedAt = now;
   // English-only. merge:true would otherwise keep a legacy translations map.
   doc.translations = admin.firestore.FieldValue.delete();
   if (extra.related_articles) doc.related_articles = extra.related_articles;
   // H1 title for homepage/blog listings (<title> may be a shorter seo_title).
   if (typeof extra.title === "string" && extra.title.trim()) doc.title = extra.title.trim();
-  await db.collection(PUBLISHED_COLLECTION).doc(slug).set(doc, { merge: true });
+  await ref.set(doc, { merge: true });
+}
+
+// BlogPosting JSON-LD, robots meta and byline -> author page (see seo-extras.js).
+// Author name always comes from the post's own byline; giosaia bylines map to the
+// Person page, every other byline to the GSPTeck editorial team (Organization).
+const seo = require("./seo-extras");
+const AUTHOR_PAGES = {
+  giosaia: "https://gspteck.com/author/giosaia",
+  editorial: "https://gspteck.com/author/gspteck-editorial",
+};
+function gspteckAuthorFor(bylineName) {
+  return /^giosaia/i.test(String(bylineName || "").trim())
+    ? { type: "Person", url: AUTHOR_PAGES.giosaia }
+    : { type: "Organization", url: AUTHOR_PAGES.editorial };
 }
 
 /** Serve the stored English page. Legacy translation maps are not rendered. */
 function renderPublishedPage(page, canonicalHref) {
   if (!page || !page.html) return null;
-  const html = stripLanguageSwitcher(page.html);
+  const html = seo.enhancePostHtml(stripLanguageSwitcher(page.html), {
+    canonical: canonicalHref,
+    publishedAt: page.publishedAt,
+    updatedAt: page.updatedAt,
+    author: gspteckAuthorFor,
+    publisher: seo.GSPTECK_PUBLISHER,
+  });
   return ensureRichAdsInHead(ensureCanonicalLink(html, canonicalHref), RICHADS_SITE_ID);
 }
 
@@ -457,6 +480,11 @@ async function getPublishedSitemapEntries() {
       changefreq: "daily",
     },
   ];
+  // Static author pages (public/author/*.html), linked from post bylines.
+  entries.push(
+    { loc: AUTHOR_PAGES.giosaia, lastmod: STATIC_LASTMOD["author/giosaia"] || null, priority: "0.5", changefreq: "monthly" },
+    { loc: AUTHOR_PAGES.editorial, lastmod: STATIC_LASTMOD["author/gspteck-editorial"] || null, priority: "0.5", changefreq: "monthly" },
+  );
   for (const p of pages) {
     entries.push({
       loc: `${PUBLISHED_BASE_URL}/${p.slug}`,
@@ -475,7 +503,7 @@ function buildSitemapXml(entries) {
   ];
   for (const u of entries) {
     xml.push("  <url>");
-    xml.push(`    <loc>${u.loc}</loc>`);
+    xml.push(`    <loc>${seo.xmlEscape(u.loc)}</loc>`);
     if (u.lastmod) xml.push(`    <lastmod>${u.lastmod}</lastmod>`);
     xml.push(`    <changefreq>${u.changefreq}</changefreq>`);
     xml.push(`    <priority>${u.priority}</priority>`);
@@ -794,7 +822,7 @@ exports.servePublishedPage = onRequest(
     maxInstances: 30,
     secrets: [contentengineSecret],
   },
-  withAgentAnalytics(async (req, res) => {
+  seo.withProbeGuard(withAgentAnalytics(async (req, res) => {
     let slug = null;
     let requestedHtmlExt = false;
 
@@ -836,7 +864,7 @@ exports.servePublishedPage = onRequest(
         redirectToPublishedCanonical(res, "/");
         return;
       }
-      res.status(404).send("Not found");
+      seo.sendCachedNotFound(res);
       return;
     }
 
@@ -857,14 +885,14 @@ exports.servePublishedPage = onRequest(
     try {
       const page = await getPublishedPage(slug);
       if (!page || !page.html) {
-        res.status(404).send("Page not found");
+        seo.sendCachedNotFound(res, "Page not found");
         return;
       }
 
       const canonicalHref = publishedCanonicalUrl(cleanPath);
       const html = renderPublishedPage(page, canonicalHref);
       if (!html) {
-        res.status(404).send("Page not found");
+        seo.sendCachedNotFound(res, "Page not found");
         return;
       }
 
@@ -876,7 +904,7 @@ exports.servePublishedPage = onRequest(
       console.error("[servePublishedPage] error", err);
       res.status(500).send("Error loading page");
     }
-  }, AGENT_ANALYTICS)
+  }, AGENT_ANALYTICS))
 );
 
 // === 3. Published site robots.txt ===

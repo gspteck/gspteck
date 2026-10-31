@@ -46,10 +46,12 @@ function extractDescription(html) {
 
 /**
  * Time-limited homepage blocks: <!--UNTIL:YYYY-MM-DD--> ... <!--/UNTIL-->
- * are shown up to and excluding that date (UTC), then dropped automatically.
+ * are shown up to and excluding that date (Europe/Rome calendar day), then dropped automatically.
  */
 function stripExpiredBlocks(html, now = new Date()) {
-  const today = now.toISOString().split("T")[0];
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(now);
   return String(html).replace(
     /<!--UNTIL:(\d{4}-\d{2}-\d{2})-->([\s\S]*?)<!--\/UNTIL-->\n?/g,
     (_m, until, inner) => (today < until ? inner : "")

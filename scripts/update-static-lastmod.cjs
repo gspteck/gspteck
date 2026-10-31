@@ -20,7 +20,14 @@ const SOURCES = {
     "functions/templates/home.html"
   ],
   "blog": [
-    "functions/site-index.js"
+    { "L": "/function renderBlog(/,/^  }$/:functions/site-index.js" },
+    { "L": "/^const siteIndex = createSiteIndex/,/^});$/:functions/index.js" }
+  ],
+  "author/giosaia": [
+    "public/author/giosaia.html"
+  ],
+  "author/gspteck-editorial": [
+    "public/author/gspteck-editorial.html"
   ],
   "policy": [
     "public/policy.html"
