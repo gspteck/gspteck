@@ -34,6 +34,9 @@ const SOURCES = {
   ],
   "delete-account": [
     "public/delete-account.html"
+  ],
+  "sitemap": [
+    "functions/html-sitemap.js"
   ]
 };
 

@@ -98,6 +98,11 @@ function createSiteIndex(opts) {
   const blog = opts.blog || {};
   let cache = null;
   let template = null;
+  // Optional serve-time transform for the rendered home/blog HTML (e.g. footer "Sitemap" link).
+  let postProcess = null;
+  function setPostProcess(fn) {
+    postProcess = typeof fn === "function" ? fn : null;
+  }
 
   async function getIndex() {
     if (cache && Date.now() - cache.at < INDEX_CACHE_TTL_MS) return cache.items;
@@ -217,7 +222,8 @@ ${list}
     } catch (err) {
       console.error("[site-index] failed to list published pages", err);
     }
-    const html = isHome ? renderHome(items) : renderBlog(items);
+    let html = isHome ? renderHome(items) : renderBlog(items);
+    if (postProcess) html = postProcess(html, isHome ? "home" : "blog");
     const canonicalHref = isHome ? `${baseUrl}/` : `${baseUrl}${BLOG_PATH}`;
     res.set("Content-Type", "text/html; charset=utf-8");
     res.set("Cache-Control", "public, max-age=300");
@@ -226,7 +232,7 @@ ${list}
     return true;
   }
 
-  return { getIndex, renderHome, renderBlog, handleLanding };
+  return { getIndex, renderHome, renderBlog, handleLanding, setPostProcess };
 }
 
 module.exports = { createSiteIndex, BLOG_PATH, HOME_LATEST_COUNT, stripExpiredBlocks };

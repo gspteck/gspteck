@@ -405,6 +405,36 @@ const siteIndex = createSiteIndex({
   },
 });
 
+// === HTML sitemap (/sitemap) + footer "Sitemap" link (added at serve time) ===
+const htmlSitemap = require("./html-sitemap");
+const HTML_SITEMAP_LABELS = {
+  "/": "GSPTeck: indie app studio by giosaia (homepage)",
+  "/blog": "GSPTeck blog: all articles",
+  "/policy": "Privacy Policy",
+  "/delete-account": "Delete your GSPTeck account and personal data",
+  "/author/giosaia": "giosaia: founder of GSPTeck (author page)",
+  "/author/gspteck-editorial": "GSPTeck editorial team (author page)",
+};
+function withSitemapFooterLink(html, kind) {
+  if (kind === "home") {
+    return htmlSitemap.addSitemapFooterLink(html, {
+      baseUrl: PUBLISHED_BASE_URL,
+      marker: '<footer id="site-footer">',
+      anchor: `<a href="${PUBLISHED_BASE_URL}/blog">Blog</a>`,
+      insert: (href) => `\n        <a href="${href}">Sitemap</a>`,
+    });
+  }
+  if (kind === "blog") {
+    return htmlSitemap.addSitemapFooterLink(html, { baseUrl: PUBLISHED_BASE_URL, marker: "<footer>" });
+  }
+  // Posts: small footer before </body> (serve time only; the stored post and its updatedAt are untouched).
+  return htmlSitemap.addSitemapFooterLink(html, {
+    baseUrl: PUBLISHED_BASE_URL,
+    fallback: (href) => `  <footer class="site-links"><p><a href="${PUBLISHED_BASE_URL}/">GSPTeck home</a> &middot; <a href="${PUBLISHED_BASE_URL}${BLOG_PATH}">Blog</a> &middot; <a href="${href}">Sitemap</a></p></footer>`,
+  });
+}
+siteIndex.setPostProcess(withSitemapFooterLink);
+
 // === Shared sitemap helpers (use PUBLISHED_* constants for reuse) ===
 // Served live by publishedSitemapXml / publishedRobotsTxt on each request.
 // contentengine post.publish | post.update | post.delete write Firestore; the next
@@ -479,6 +509,13 @@ async function getPublishedSitemapEntries() {
       lastmod: newestIsoDate(STATIC_LASTMOD.blog, newestPost),
       priority: "0.7",
       changefreq: "daily",
+    },
+    // Crawlable HTML sitemap (functions/html-sitemap.js); its list changes whenever a post is published.
+    {
+      loc: `${PUBLISHED_BASE_URL}${htmlSitemap.HTML_SITEMAP_PATH}`,
+      lastmod: newestIsoDate(STATIC_LASTMOD.sitemap, newestPost),
+      priority: "0.3",
+      changefreq: "weekly",
     },
   ];
   // Static author pages (public/author/*.html), linked from post bylines.
@@ -842,6 +879,32 @@ exports.servePublishedPage = onRequest(
       return;
     }
 
+    // Crawlable HTML sitemap: /sitemap (/sitemap/ and /sitemap.html 301 to it).
+    if (htmlSitemap.isHtmlSitemapPath(p)) {
+      if ((host && !isCanonicalPublishedHost(host)) || p !== htmlSitemap.HTML_SITEMAP_PATH) {
+        redirectToPublishedCanonical(res, htmlSitemap.HTML_SITEMAP_PATH);
+        return;
+      }
+      let index = [];
+      let entries = [];
+      try {
+        [index, entries] = await Promise.all([siteIndex.getIndex(), getPublishedSitemapEntries()]);
+      } catch (err) {
+        console.error("[servePublishedPage] html sitemap failed", err);
+        res.set("Cache-Control", "no-store");
+        res.status(503).type("text/plain").send("Sitemap temporarily unavailable");
+        return;
+      }
+      const out = htmlSitemap.renderHtmlSitemap({
+        siteName: "GSPTeck", baseUrl: PUBLISHED_BASE_URL, blogPath: BLOG_PATH, entries, index, labels: HTML_SITEMAP_LABELS,
+      });
+      res.set("Content-Type", "text/html; charset=utf-8");
+      res.set("Cache-Control", "public, max-age=300");
+      res.set("Link", `<${out.canonical}>; rel="canonical"`);
+      res.status(200).send(out.html);
+      return;
+    }
+
     // Match root-level slug or slug.html  (e.g. /my-post or /my-post.html)
     // IMPORTANT: skip the root "/" itself — hosting will serve index.html for that.
     let m = p.match(/^\/([a-z0-9-]+)(\.html)?$/i);
@@ -891,7 +954,8 @@ exports.servePublishedPage = onRequest(
       }
 
       const canonicalHref = publishedCanonicalUrl(cleanPath);
-      const html = renderPublishedPage(page, canonicalHref);
+      const rendered = renderPublishedPage(page, canonicalHref);
+      const html = rendered ? withSitemapFooterLink(rendered, "post") : rendered;
       if (!html) {
         seo.sendCachedNotFound(res, "Page not found");
         return;
