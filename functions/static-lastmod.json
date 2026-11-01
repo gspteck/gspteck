@@ -23,6 +23,9 @@
     ],
     "delete-account": [
       "public/delete-account.html"
+    ],
+    "sitemap": [
+      "functions/html-sitemap.js"
     ]
   },
   "pages": {
@@ -31,6 +34,7 @@
     "author/giosaia": "2026-10-31",
     "author/gspteck-editorial": "2026-10-31",
     "policy": "2026-10-14",
-    "delete-account": "2026-10-14"
+    "delete-account": "2026-10-14",
+    "sitemap": "2026-11-01"
   }
 }
