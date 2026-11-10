@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 const crypto = require("crypto");
 const express = require("express");
 const { extractMonolingualPost, stripLanguageSwitcher } = require("./content-extract");
+const adsense = require("./adsense");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -247,7 +248,7 @@ function buildPublishedHtml(post, relatedArticles) {
         html = html + relatedHtml;
       }
     }
-    return stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref));
+    return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)));
   }
 
   // Build a clean standalone HTML document
@@ -259,7 +260,7 @@ function buildPublishedHtml(post, relatedArticles) {
       const trimmedBody = bodyHtml.trim();
       const bodyHasStartingH1 = /^<h1/i.test(trimmedBody);
 
-      return stripRichAdsFromHtml(`<!DOCTYPE html>
+      return adsense.withAdSenseOnPost(stripRichAdsFromHtml(`<!DOCTYPE html>
     <html lang="${escapeHtml(post.language || "en")}">
     <head>
       <meta charset="UTF-8">
@@ -286,7 +287,7 @@ function buildPublishedHtml(post, relatedArticles) {
       </article>
       ${relatedHtml}
     </body>
-  </html>`);
+  </html>`));
 }
 
 function sanitizeSlug(raw) {
@@ -354,7 +355,7 @@ function renderPublishedPage(page, canonicalHref) {
     author: gspteckAuthorFor,
     publisher: seo.GSPTECK_PUBLISHER,
   });
-  return stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref));
+  return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)));
 }
 
 async function getPublishedPage(slug) {
@@ -909,7 +910,7 @@ exports.servePublishedPage = onRequest(
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=300");
       res.set("Link", `<${out.canonical}>; rel="canonical"`);
-      res.status(200).send(out.html);
+      res.status(200).send(adsense.ensureAdSenseAccountMeta(out.html));
       return;
     }
 
@@ -972,6 +973,7 @@ exports.servePublishedPage = onRequest(
       res.set("Content-Type", "text/html; charset=utf-8");
       res.set("Cache-Control", "public, max-age=300");
       res.set("Link", `<${canonicalHref}>; rel="canonical"`);
+      adsense.setAdSenseCsp(res);
       res.status(200).send(html);
     } catch (err) {
       console.error("[servePublishedPage] error", err);

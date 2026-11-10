@@ -1,6 +1,6 @@
 # Privacy Policy for GSPTeck Products
 
-_Last Updated: May 13, 2026_
+_Last Updated: November 10, 2026_
 
 GSPTeck ("Company," "we," "our," or "us") values transparency regarding how information is collected, used, processed, shared, stored, and monetized across all applications, websites, software, APIs, digital platforms, and services operated by GSPTeck (collectively, the "Services").
 
@@ -191,6 +191,11 @@ We and our partners may associate, combine, synchronize, or correlate informatio
 
 GSPTeck products may contain advertisements, sponsored content, analytics tools, and third-party monetization technologies.
 
+## Google AdSense on our websites
+
+Our websites, including gspteck.com, coinx.gspteck.com, coindrop.website, swappr.website, autox.network, and pilotaseo.com, may show Google AdSense ads on article pages. Google, as a third-party vendor, uses cookies to serve ads based on your prior visits to these or other websites. Google's use of advertising cookies enables it and its partners to serve ads to you based on your visit to our sites and/or other sites on the Internet. You can opt out of personalized advertising by visiting [Google Ads Settings](https://www.google.com/settings/ads), or opt out of a third-party vendor's use of cookies for personalized advertising by visiting [www.aboutads.info/choices](https://www.aboutads.info/choices/). See also [Google's advertising policy](https://policies.google.com/technologies/ads) and [Google's privacy policy](https://policies.google.com/privacy).
+
+
 We and our partners may use:
 
 - Cookies
@@ -214,7 +219,7 @@ Advertisements displayed within the Services may be personalized using collected
 
 The Services may integrate with or rely upon third-party providers including:
 
-- Google
+- Google (including Google AdSense on website article pages)
 - Firebase
 - AdMob
 - Meta

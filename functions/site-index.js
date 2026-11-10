@@ -4,6 +4,7 @@
  * time (cached per instance for a few minutes) so new posts appear automatically.
  */
 const fs = require("fs");
+const { ensureAdSenseAccountMeta } = require("./adsense");
 const path = require("path");
 
 const BLOG_PATH = "/blog";
@@ -175,6 +176,7 @@ function createSiteIndex(opts) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-adsense-account" content="ca-pub-6628299939568043">
   <title>${escapeHtml(title)}</title>
   <link rel="canonical" href="${escapeHtml(canonical)}">
   <meta name="description" content="${escapeHtml(description)}">
@@ -235,7 +237,7 @@ ${list}
     res.set("Content-Type", "text/html; charset=utf-8");
     res.set("Cache-Control", LANDING_CACHE_CONTROL);
     res.set("Link", `<${canonicalHref}>; rel="canonical"`);
-    res.status(200).send(html);
+    res.status(200).send(ensureAdSenseAccountMeta(html));
     return true;
   }
 
