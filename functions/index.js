@@ -13,6 +13,8 @@ const db = admin.firestore();
 const PUBLISHED_BASE_URL = "https://gspteck.com";
 const RICHADS_SITE_ID = "407899";
 const PUBLISHED_COLLECTION = "gspteckPages";
+const { bumpIndexEpoch } = require("./index-epoch");
+const INDEX_EPOCH_KEY = "gspteck";
 // The root path for the "landing" of published content on the dedicated site.
 const PUBLISHED_LANDING = "/";
 // Hosts that may serve the same Firebase Hosting site (custom domain + default web.app).
@@ -318,6 +320,9 @@ async function savePublishedPage(slug, html, extra = {}) {
     html,
     updatedAt: now,
   };
+  // link_only update (existing page only): the content change is just internal links, so
+  // updatedAt (dateModified, sitemap lastmod) is left exactly as stored. Default: updatedAt = now.
+  if (extra.linkOnly && existing.exists && existing.get("updatedAt")) delete doc.updatedAt;
   // publishedAt is set on first save only; updates refresh updatedAt alone.
   if (!existing.exists || !existing.get("publishedAt")) doc.publishedAt = now;
   // English-only. merge:true would otherwise keep a legacy translations map.
@@ -391,6 +396,7 @@ const path = require("path");
 const { createSiteIndex, BLOG_PATH } = require("./site-index");
 const siteIndex = createSiteIndex({
   db,
+  epochKey: INDEX_EPOCH_KEY,
   collection: PUBLISHED_COLLECTION,
   baseUrl: PUBLISHED_BASE_URL,
   siteName: "GSPTeck",
@@ -779,10 +785,14 @@ contentengineApp.all(/.*/, async (req, res) => {
 
       // related_articles: internal links contentengine expects on the live page for crawl paths
       const fullHtml = buildPublishedHtml(monoPost, payload.related_articles);
+      // Optional link_only (post.update only): update the body/links without touching updatedAt.
+      const linkOnly = event === "post.update" && (payload.link_only === true || post.link_only === true);
       await savePublishedPage(slug, fullHtml, {
         related_articles: payload.related_articles || [],
         title: monoPost.title,
+        linkOnly,
       });
+      await bumpIndexEpoch(db, admin, INDEX_EPOCH_KEY);
 
       // Sitemap + robots are generated on the fly from Firestore by
       // publishedSitemapXml / publishedRobotsTxt — no static file write needed.
@@ -810,6 +820,7 @@ contentengineApp.all(/.*/, async (req, res) => {
       if (slug) {
         try {
           await db.collection(PUBLISHED_COLLECTION).doc(slug).delete();
+          await bumpIndexEpoch(db, admin, INDEX_EPOCH_KEY);
           console.log(
             `[contentengine] post.delete: removed ${slug} (dropped from sitemap/robots on next request)`
           );

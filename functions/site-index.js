@@ -8,7 +8,9 @@ const path = require("path");
 
 const BLOG_PATH = "/blog";
 const HOME_LATEST_COUNT = 5;
-const INDEX_CACHE_TTL_MS = 5 * 60 * 1000;
+const INDEX_CACHE_TTL_MS = 5 * 60 * 1000; // fallback only; contentenginePublish bumps meta/articleIndexEpoch (see index-epoch.js)
+const LANDING_CACHE_CONTROL = "public, max-age=60";
+const { createEpochReader } = require("./index-epoch");
 
 function escapeHtml(str) {
   return String(str || "")
@@ -104,8 +106,13 @@ function createSiteIndex(opts) {
     postProcess = typeof fn === "function" ? fn : null;
   }
 
+  const epochReader = createEpochReader(db, opts.epochKey || collection);
+
   async function getIndex() {
-    if (cache && Date.now() - cache.at < INDEX_CACHE_TTL_MS) return cache.items;
+    const epoch = await epochReader.read();
+    if (cache && Date.now() - cache.at < INDEX_CACHE_TTL_MS && cache.epoch === epoch) return cache.items;
+    // Read the epoch fresh *before* listing so a publish that lands mid-build triggers another rebuild.
+    const builtAtEpoch = await epochReader.read(true);
     const snap = await db.collection(collection).get();
     const items = [];
     for (const d of snap.docs) {
@@ -125,7 +132,7 @@ function createSiteIndex(opts) {
       });
     }
     items.sort((a, b) => b.ms - a.ms || a.slug.localeCompare(b.slug));
-    cache = { at: Date.now(), items };
+    cache = { at: Date.now(), items, epoch: builtAtEpoch };
     return items;
   }
 
@@ -226,7 +233,7 @@ ${list}
     if (postProcess) html = postProcess(html, isHome ? "home" : "blog");
     const canonicalHref = isHome ? `${baseUrl}/` : `${baseUrl}${BLOG_PATH}`;
     res.set("Content-Type", "text/html; charset=utf-8");
-    res.set("Cache-Control", "public, max-age=300");
+    res.set("Cache-Control", LANDING_CACHE_CONTROL);
     res.set("Link", `<${canonicalHref}>; rel="canonical"`);
     res.status(200).send(html);
     return true;
