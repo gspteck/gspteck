@@ -11,7 +11,6 @@ const db = admin.firestore();
 // === Published content configuration (makes functions reusable across projects) ===
 // Change these values (or load via functions config) when reusing for a future dedicated publishing site.
 const PUBLISHED_BASE_URL = "https://gspteck.com";
-const RICHADS_SITE_ID = "407899";
 const PUBLISHED_COLLECTION = "gspteckPages";
 const { bumpIndexEpoch } = require("./index-epoch");
 const INDEX_EPOCH_KEY = "gspteck";
@@ -195,19 +194,17 @@ function ensureCanonicalLink(html, canonicalHref) {
 }
 
 /**
- * Inject RichAds pop script into <head> once (idempotent).
- * Posts only — call from buildPublishedHtml / renderPublishedPage.
- * Never use on static landings (index.html, marketing, policy, etc.).
+ * Remove leftover RichAds pop scripts and richinfo.co tags from stored or
+ * assembled post HTML. RichAds has been removed from these sites.
  */
-function ensureRichAdsInHead(html, siteId) {
-  if (!html || typeof html !== "string" || !siteId) return html;
-  if (/richads-pu-ob\.js/i.test(html)) return html;
-  const tag = `<script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="987835" data-siteid="${String(siteId)}" async data-cfasync="false"></script>`;
-  if (/<head[^>]*>/i.test(html)) {
-    return html.replace(/<head[^>]*>/i, (m) => `${m}\n  ${tag}`);
-  }
-  return `${tag}\n${html}`;
+function stripRichAdsFromHtml(html) {
+  if (!html || typeof html !== "string") return html;
+  return html
+    .replace(/<script\b[^>]*\bsrc\s*=\s*["'][^"']*richads-pu-ob\.js[^"']*["'][^>]*>\s*<\/script>/gi, "")
+    .replace(/<script\b[^>]*\bsrc\s*=\s*["'][^"']*richinfo\.co[^"']*["'][^>]*>\s*<\/script>/gi, "")
+    .replace(/<link\b[^>]*\bhref\s*=\s*["'][^"']*richinfo\.co[^"']*["'][^>]*\/?>/gi, "");
 }
+
 
 
 function buildPublishedHtml(post, relatedArticles) {
@@ -250,7 +247,7 @@ function buildPublishedHtml(post, relatedArticles) {
         html = html + relatedHtml;
       }
     }
-    return ensureRichAdsInHead(ensureCanonicalLink(html, canonicalHref), RICHADS_SITE_ID);
+    return stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref));
   }
 
   // Build a clean standalone HTML document
@@ -262,7 +259,7 @@ function buildPublishedHtml(post, relatedArticles) {
       const trimmedBody = bodyHtml.trim();
       const bodyHasStartingH1 = /^<h1/i.test(trimmedBody);
 
-      return ensureRichAdsInHead(`<!DOCTYPE html>
+      return stripRichAdsFromHtml(`<!DOCTYPE html>
     <html lang="${escapeHtml(post.language || "en")}">
     <head>
       <meta charset="UTF-8">
@@ -289,7 +286,7 @@ function buildPublishedHtml(post, relatedArticles) {
       </article>
       ${relatedHtml}
     </body>
-  </html>`, RICHADS_SITE_ID);
+  </html>`);
 }
 
 function sanitizeSlug(raw) {
@@ -357,7 +354,7 @@ function renderPublishedPage(page, canonicalHref) {
     author: gspteckAuthorFor,
     publisher: seo.GSPTECK_PUBLISHER,
   });
-  return ensureRichAdsInHead(ensureCanonicalLink(html, canonicalHref), RICHADS_SITE_ID);
+  return stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref));
 }
 
 async function getPublishedPage(slug) {

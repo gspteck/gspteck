@@ -160,7 +160,7 @@ def validate(
     if PLACEHOLDER_RE.search(body_html):
         errors.append("body contains placeholder/TODO/[insert] text")
     if RICHADS_RE.search(body_html):
-        errors.append("body contains RichAds script (must be injected by publisher, not draft)")
+        errors.append("body contains RichAds script (RichAds has been removed; do not include it in drafts)")
     # Translation is permanently banned (9 Oct 2026): no machine-translated variants or switchers.
     if TRANSLATION_RE.search(body_html) or (isinstance(meta.get("translations"), dict) and meta.get("translations")):
         errors.append("translation artifacts found (translations map / hreflang / ce-lang-switch / translate API); translation is banned")
