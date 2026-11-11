@@ -248,7 +248,7 @@ function buildPublishedHtml(post, relatedArticles) {
         html = html + relatedHtml;
       }
     }
-    return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)));
+    return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)), slug || canonicalHref);
   }
 
   // Build a clean standalone HTML document
@@ -287,7 +287,7 @@ function buildPublishedHtml(post, relatedArticles) {
       </article>
       ${relatedHtml}
     </body>
-  </html>`));
+  </html>`), slug || canonicalHref);
 }
 
 function sanitizeSlug(raw) {
@@ -355,7 +355,7 @@ function renderPublishedPage(page, canonicalHref) {
     author: gspteckAuthorFor,
     publisher: seo.GSPTECK_PUBLISHER,
   });
-  return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)));
+  return adsense.withAdSenseOnPost(stripRichAdsFromHtml(ensureCanonicalLink(html, canonicalHref)), page.slug || canonicalHref);
 }
 
 async function getPublishedPage(slug) {
