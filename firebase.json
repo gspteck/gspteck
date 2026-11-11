@@ -112,12 +112,17 @@
         "region": "us-central1"
       },
       {
+        "source": "/ads.txt",
+        "destination": "/ads.txt"
+      },
+      {
         "source": "/**",
         "function": "servePublishedPage",
         "region": "us-central1"
       }
     ],
-    "cleanUrls": true
+    "cleanUrls": true,
+    "target": "gspteck-a9e49"
   },
   "functions": [
     {

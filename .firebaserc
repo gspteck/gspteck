@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "gspteck-a9e49"
+  },
+  "targets": {
+    "gspteck-a9e49": {
+      "hosting": {
+        "gspteck-a9e49": [
+          "gspteck-a9e49"
+        ]
+      }
+    }
   }
 }
