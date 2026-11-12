@@ -1,7 +1,7 @@
 "use strict";
 
 /** Google AdSense publisher ID. The adsbygoogle script is injected only on published post pages via withAdSenseOnPost. Homepage, /blog, /sitemap, policy, pricing, tools, author, 404 and other main pages must not load the script; they may include the google-adsense-account meta for site verification only. */
-const ADSENSE_PUBLISHER_ID = "ca-pub-1134522531752598";
+const ADSENSE_PUBLISHER_ID = "ca-pub-6628299939568043";
 
 const ADSENSE_ACCOUNT_META =
   `<meta name="google-adsense-account" content="${ADSENSE_PUBLISHER_ID}">`;
