@@ -1,0 +1,29 @@
+# GSPTeck
+
+> GSPTeck is giosaia's indie studio. It builds mobile and web apps with Flutter and Firebase.
+
+GSPTeck is run by one developer, giosaia. Official Android apps are published on Google Play under the developer name GSPTeck, with package names that start with com.gspteck.
+
+Contact the studio at themaker@gspteck.com. Official social accounts are @giosaia on X (https://x.com/giosaia) and Instagram (https://instagram.com/giosaia). Source code is at https://github.com/gspteck.
+
+Website setup is a GSPTeck service: €50 for a single-page site or €200 for a multi-page site, then €55 per year all-inclusive (hosting and domain). These prices are final; no tax is added.
+
+## Official products and sites
+
+- [CoinDrop](https://coindrop.website): Android app for crypto airdrops, community tasks and daily rewards on Solana (Google Play: com.gspteck.coindrop)
+- [Swappr](https://swappr.website): Android app to swap one crypto coin for another (Google Play: com.gspteck.swappr)
+- [IOU](https://play.google.com/store/apps/details?id=com.gspteck.iou): Android app to track money you owe and money owed to you (Google Play: com.gspteck.iou)
+- Random Number Generator: simple Android utility, published on Google Play as com.gspteck.randomnumbergenerator
+- TuneBinder: Android app, published on Google Play as com.gspteck.tunebinder
+- SnakeGame: classic snake game clone, listed on the [GSPTeck homepage](https://gspteck.com/) (Unity)
+- [Auto X](https://autox.network): Telegram bot that schedules and publishes posts on X (@auto_x_schedule_bot)
+- [CoinX](https://coinx.gspteck.com): hub for GSPTeck's crypto projects and guides
+- [PilotaSEO](https://pilotaseo.com): done-for-you SEO blog service in English and Italian
+
+## About this site
+
+- [Home](https://gspteck.com/): studio homepage
+- [Who is GSPTeck?](https://gspteck.com/who-is-gspteck-giosaia-apps-official-links): official products and how to check an app is ours
+- [Blog](https://gspteck.com/blog): notes on shipping Flutter and Firebase apps
+- [Privacy Policy](https://gspteck.com/policy): how GSPTeck products handle data
+- [Delete account](https://gspteck.com/delete-account): request removal of personal data
