@@ -38,7 +38,41 @@ PLACEHOLDER_RE = re.compile(
     re.I,
 )
 RICHADS_RE = re.compile(r"richads-pu-ob\.js", re.I)
-TRANSLATION_RE = re.compile(r"hreflang|ce-lang-switch|translate\.googleapis|translation\.googleapis", re.I)
+# Machine-translation APIs are still banned anywhere in the draft.
+TRANSLATE_API_RE = re.compile(r"translate\.googleapis|translation\.googleapis", re.I)
+# Language-switcher hook used by the removed translation widget.
+LANG_SWITCH_ATTR_RE = re.compile(
+    r"""<(?:[a-zA-Z][\w:-]*)\b[^>]*(?:class|id)\s*=\s*["'][^"']*\bce-lang-switch\b""",
+    re.I | re.S,
+)
+# Real HTML attribute, not the word in prose or escaped examples (&lt;link hreflang&gt;).
+HREFLANG_ATTR_RE = re.compile(
+    r"""<[a-zA-Z][\w:-]*\b[^>]*\bhreflang\s*=""",
+    re.I | re.S,
+)
+# lang= / xml:lang= on a real tag.
+LANG_ATTR_RE = re.compile(
+    r"""<[a-zA-Z][\w:-]*\b[^>]*\b(?:xml:)?lang\s*=\s*(?:["']\s*)?([a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*)""",
+    re.I | re.S,
+)
+# Common ISO 639-1 codes used as a first path segment or language subdomain.
+LOCALE_LANG_CODES = frozenset(
+    """
+    aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch
+    co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga
+    gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io is it iu ja
+    jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv
+    mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or
+    os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg si sk sl sm sn so sq sr
+    ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi
+    vo wa wo xh yi yo za zh zu
+    """.split()
+)
+SWITCHER_CLASS_RE = re.compile(
+    r"""<(?:[a-zA-Z][\w:-]*)\b[^>]*(?:class|id)\s*=\s*["'][^"']*\b(?:language-switcher|lang-switcher|lang-switch|hreflang-switch)\b""",
+    re.I | re.S,
+)
+
 AMAZON_DP_RE = re.compile(r"^/(?:[^/]+/)?dp/([A-Z0-9]{10})/?$", re.I)
 
 ROUNDUP_MIN_WORDS = 1500
@@ -125,6 +159,120 @@ def link_ok(url: str, timeout: float = 12.0) -> bool:
     return False
 
 
+def _expected_lang(meta: dict) -> str:
+    raw = str(meta.get("language") or meta.get("lang") or "en").strip().lower().replace("_", "-")
+    return raw or "en"
+
+
+def _lang_ok(value: str, expected: str) -> bool:
+    value = (value or "").strip().lower().replace("_", "-")
+    expected = (expected or "en").strip().lower().replace("_", "-")
+    if not value:
+        return True
+    return value.split("-")[0] == expected.split("-")[0]
+
+
+def _is_locale_path_segment(seg: str) -> bool:
+    """True for it, en, en-us, pt-br, zh-hans, zh-hant-cn — not hyphenated slugs."""
+    seg = (seg or "").lower()
+    if seg in LOCALE_LANG_CODES:
+        return True
+    parts = seg.split("-")
+    scripts = {"hans", "hant", "latn", "cyrl", "arab"}
+    if len(parts) == 2:
+        lang, rest = parts
+        if lang in LOCALE_LANG_CODES and (len(rest) == 2 and rest.isalpha() or rest in scripts):
+            return True
+    if len(parts) == 3:
+        lang, mid, region = parts
+        if lang in LOCALE_LANG_CODES and mid in scripts and len(region) == 2 and region.isalpha():
+            return True
+    return False
+
+
+def _path_starts_with_locale(path: str) -> bool:
+    parts = [p for p in (path or "").split("/") if p]
+    if not parts:
+        return False
+    return _is_locale_path_segment(parts[0])
+
+
+def _is_same_site_host(host: str, site_host: str | None) -> bool:
+    host = (host or "").lower().removeprefix("www.")
+    site = (site_host or "").lower().removeprefix("www.")
+    if not host or not site:
+        return False
+    return host == site or host.endswith("." + site) or host in SITE_HOST_ALIASES.get(site, ())
+
+
+def _is_locale_switch_href(href: str, site_host: str | None) -> bool:
+    """True for language-switch links to /it/ (or other locale) versions of this site."""
+    href = (href or "").strip()
+    if not href or href.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
+        return False
+    if href.startswith("//"):
+        href = "https:" + href
+    if href.startswith("http://") or href.startswith("https://"):
+        p = urlparse(href)
+        host = (p.hostname or "").lower()
+        if not _is_same_site_host(host, site_host):
+            return False
+        sub = host.split(".")[0]
+        site = (site_host or "").lower().removeprefix("www.")
+        # Language subdomain of this site, e.g. it.pilotaseo.com
+        if sub in LOCALE_LANG_CODES and host.removeprefix("www.") != site:
+            return True
+        return _path_starts_with_locale(p.path or "/")
+    if href.startswith("/") and not href.startswith("//"):
+        return _path_starts_with_locale(href)
+    return False
+
+
+def translation_markup_errors(body_html: str, meta: dict, site_host: str | None = None) -> list[str]:
+    """Flag real translation / language-switch markup, not prose mentions of hreflang.
+
+    Fails: <link hreflang>, any hreflang attribute, ce-lang-switch / language-switcher
+    elements, same-site links to /it/ (or other locale) versions, lang attributes
+    other than the expected language, a translations map in draft JSON, and
+    translate.googleapis / translation.googleapis. Passes: the word "hreflang"
+    in prose, and escaped examples inside <code> or <pre> such as
+    &lt;link hreflang&gt;.
+    """
+    errors: list[str] = []
+    if isinstance(meta.get("translations"), dict) and meta.get("translations"):
+        errors.append(
+            "translation artifacts found (translations map in draft JSON); translation is banned"
+        )
+    if TRANSLATE_API_RE.search(body_html or ""):
+        errors.append(
+            "translation artifacts found (translate API); translation is banned"
+        )
+    if HREFLANG_ATTR_RE.search(body_html or ""):
+        errors.append(
+            "language-switch markup found (hreflang attribute on an HTML element); "
+            "prose or escaped examples are allowed, real markup is not"
+        )
+    if LANG_SWITCH_ATTR_RE.search(body_html or "") or SWITCHER_CLASS_RE.search(body_html or ""):
+        errors.append(
+            "language-switch markup found (language-switcher element); translation widgets are banned"
+        )
+    expected = _expected_lang(meta)
+    for m in LANG_ATTR_RE.finditer(body_html or ""):
+        if not _lang_ok(m.group(1), expected):
+            errors.append(
+                f"language-switch markup found (lang={m.group(1)!r} on an HTML element; "
+                f"expected {expected})"
+            )
+            break
+    for href in HREF_RE.findall(body_html or ""):
+        if _is_locale_switch_href(href, site_host):
+            errors.append(
+                f"language-switch markup found (same-site locale-version link: {href})"
+            )
+            break
+    return errors
+
+
 def validate(
     *,
     body_html: str,
@@ -161,9 +309,9 @@ def validate(
         errors.append("body contains placeholder/TODO/[insert] text")
     if RICHADS_RE.search(body_html):
         errors.append("body contains RichAds script (RichAds has been removed; do not include it in drafts)")
-    # Translation is permanently banned (9 Oct 2026): no machine-translated variants or switchers.
-    if TRANSLATION_RE.search(body_html) or (isinstance(meta.get("translations"), dict) and meta.get("translations")):
-        errors.append("translation artifacts found (translations map / hreflang / ce-lang-switch / translate API); translation is banned")
+    # Translation widgets and language-switch *markup* are banned; the word
+    # "hreflang" in prose or escaped <code>/<pre> examples is allowed.
+    errors.extend(translation_markup_errors(body_html, meta, site_host))
 
     roundup = is_roundup(meta)
     words = text_words(body_html)
