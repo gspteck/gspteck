@@ -241,6 +241,15 @@ function ensureSocialImageTags(html, lead, opts = {}) {
   return out.replace(/<\/head>/i, `  ${tags.join("\n  ")}\n</head>`);
 }
 
+// Image Metadata: creator only. Do not emit license or acquireLicensePage
+// (gspteck has no reuse-license page). Person matches creditText "giosaia (GSPTeck)"
+// and https://gspteck.com/author/giosaia (200).
+const GSPTECK_IMAGE_CREATOR = {
+  "@type": "Person",
+  name: "giosaia (GSPTeck)",
+  url: "https://gspteck.com/author/giosaia",
+};
+
 function leadImageObject(lead) {
   if (!lead || !lead.url) return null;
   return {
@@ -250,7 +259,48 @@ function leadImageObject(lead) {
     ...(lead.width ? { width: lead.width } : {}),
     ...(lead.height ? { height: lead.height } : {}),
     ...(lead.alt ? { caption: lead.alt } : {}),
+    creator: GSPTECK_IMAGE_CREATOR,
   };
+}
+
+/** Add creator to post ImageObjects in JSON-LD. Skip publisher.logo ImageObjects. */
+function addCreatorToImageObjects(node, skip) {
+  let changed = false;
+  if (!node || typeof node !== "object") return false;
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      if (addCreatorToImageObjects(item, skip)) changed = true;
+    }
+    return changed;
+  }
+  if (!skip && String(node["@type"] || "") === "ImageObject" && !node.creator) {
+    node.creator = Object.assign({}, GSPTECK_IMAGE_CREATOR);
+    changed = true;
+  }
+  for (const key of Object.keys(node)) {
+    if (key === "creator") continue;
+    const childSkip = skip || key === "logo" || key === "publisher";
+    if (addCreatorToImageObjects(node[key], childSkip)) changed = true;
+  }
+  return changed;
+}
+
+function ensureImageCreatorInJsonLd(html) {
+  if (!html || typeof html !== "string") return html;
+  return html.replace(
+    /(<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>)([\s\S]*?)(<\/script>)/gi,
+    (m, open, json, close) => {
+      if (!/"@type"\s*:\s*"ImageObject"/.test(json)) return m;
+      let data;
+      try {
+        data = JSON.parse(json);
+      } catch (_e) {
+        return m;
+      }
+      const changed = addCreatorToImageObjects(data, false);
+      return changed ? `${open}${jsonForScript(data)}${close}` : m;
+    }
+  );
 }
 
 /** Upgrade a bare image URL in a stored BlogPosting/Article JSON-LD to the lead ImageObject. */
@@ -333,7 +383,9 @@ function enhancePostHtml(html, opts = {}) {
   const description = descC ? decodeEntities(descC[1]).trim() : "";
   out = ensureSocialImageTags(out, lead, { canonical: opts.canonical, headline, description, genericOgImage: opts.genericOgImage });
 
-  if (/"@type"\s*:\s*"(?:BlogPosting|Article|NewsArticle)"/.test(out)) return upgradeStoredLdImage(out, lead);
+  if (/"@type"\s*:\s*"(?:BlogPosting|Article|NewsArticle)"/.test(out)) {
+    return ensureImageCreatorInJsonLd(upgradeStoredLdImage(out, lead));
+  }
 
   const imageObj = leadImageObject(lead);
   const datePublished = tsToIso(opts.publishedAt);
@@ -365,10 +417,10 @@ function enhancePostHtml(html, opts = {}) {
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": opts.canonical },
   };
-  return out.replace(
+  return ensureImageCreatorInJsonLd(out.replace(
     /<\/head>/i,
     `  <script type="application/ld+json">${jsonForScript(ld)}</script>\n</head>`
-  );
+  ));
 }
 
 const GSPTECK_PUBLISHER = {
@@ -380,6 +432,8 @@ const GSPTECK_PUBLISHER = {
 module.exports = {
   NOT_FOUND_CACHE,
   GSPTECK_PUBLISHER,
+  GSPTECK_IMAGE_CREATOR,
+  ensureImageCreatorInJsonLd,
   isProbePath,
   sendCachedNotFound,
   withProbeGuard,
